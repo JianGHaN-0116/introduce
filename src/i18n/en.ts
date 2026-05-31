@@ -85,8 +85,6 @@ const en = {
       button: "Login",
       error: "Invalid username or password",
       hint: "Enter admin credentials to continue",
-      loading: "Logging in...",
-      serverError: "Cannot connect to server, please check if backend is running",
     },
   },
 } as const;

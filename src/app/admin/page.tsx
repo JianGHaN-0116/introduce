@@ -21,6 +21,18 @@ import {
 } from "lucide-react";
 import { LangProvider, useLang } from "@/components/LangProvider";
 
+const ADMIN_USERNAME_HASH =
+  "c46886b0b472784a6c50bb94f5f5aa091b41b65c7ec2eb5461f44e60796f4479";
+const ADMIN_PASSWORD_HASH =
+  "091131ec9c517689297ba809b94c38a82562287421a06201f45942e229d61907";
+
+async function sha256(message: string): Promise<string> {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 type SectionKey =
   | "basic"
   | "about"
@@ -47,27 +59,16 @@ function AdminContent() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loginError, setLoginError] = useState("");
-  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState(false);
   const [config, setConfig] = useState(JSON.parse(JSON.stringify(defaultConfig)));
   const [activeSection, setActiveSection] = useState<SectionKey>("basic");
   const [saved, setSaved] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    const token = sessionStorage.getItem("admin_token");
-    if (token) {
-      fetch("/api/verify", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => {
-          if (res.ok) {
-            setAuthenticated(true);
-          } else {
-            sessionStorage.removeItem("admin_token");
-          }
-        })
-        .catch(() => {});
+    const storedAuth = sessionStorage.getItem("admin_auth");
+    if (storedAuth === "true") {
+      setAuthenticated(true);
     }
     const stored = localStorage.getItem("siteConfig");
     if (stored) {
@@ -78,31 +79,20 @@ function AdminContent() {
   }, []);
 
   const handleLogin = async () => {
-    setLoginLoading(true);
-    setLoginError("");
-    try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        sessionStorage.setItem("admin_token", data.token);
-        setAuthenticated(true);
-      } else {
-        setLoginError(data.error || t.admin.login.error);
-      }
-    } catch {
-      setLoginError(t.admin.login.serverError);
-    } finally {
-      setLoginLoading(false);
+    const usernameHash = await sha256(username);
+    const passwordHash = await sha256(password);
+    if (usernameHash === ADMIN_USERNAME_HASH && passwordHash === ADMIN_PASSWORD_HASH) {
+      setAuthenticated(true);
+      setLoginError(false);
+      sessionStorage.setItem("admin_auth", "true");
+    } else {
+      setLoginError(true);
     }
   };
 
   const handleLogout = () => {
     setAuthenticated(false);
-    sessionStorage.removeItem("admin_token");
+    sessionStorage.removeItem("admin_auth");
     setUsername("");
     setPassword("");
   };
@@ -213,7 +203,7 @@ function AdminContent() {
                 <input
                   type="text"
                   value={username}
-                  onChange={(e) => { setUsername(e.target.value); setLoginError(""); }}
+                  onChange={(e) => { setUsername(e.target.value); setLoginError(false); }}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                   placeholder={t.admin.login.username}
                   className="w-full bg-white/[0.03] border border-white/10 rounded-lg pl-9 pr-4 py-3 text-sm text-white/70 focus:outline-none focus:border-cyan-500/30 transition-colors"
@@ -224,7 +214,7 @@ function AdminContent() {
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setLoginError(""); }}
+                  onChange={(e) => { setPassword(e.target.value); setLoginError(false); }}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                   placeholder={t.admin.login.password}
                   className="w-full bg-white/[0.03] border border-white/10 rounded-lg pl-9 pr-10 py-3 text-sm text-white/70 focus:outline-none focus:border-cyan-500/30 transition-colors"
@@ -238,14 +228,13 @@ function AdminContent() {
                 </button>
               </div>
               {loginError && (
-                <p className="text-xs text-red-400/70">{loginError}</p>
+                <p className="text-xs text-red-400/70">{t.admin.login.error}</p>
               )}
               <button
                 onClick={handleLogin}
-                disabled={loginLoading}
-                className="w-full py-3 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-sm font-medium hover:bg-cyan-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-sm font-medium hover:bg-cyan-500/20 transition-all"
               >
-                {loginLoading ? t.admin.login.loading : t.admin.login.button}
+                {t.admin.login.button}
               </button>
             </div>
           </div>

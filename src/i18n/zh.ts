@@ -83,8 +83,6 @@ const zh = {
       button: "登录",
       error: "用户名或密码错误",
       hint: "请输入管理员账号和密码",
-      loading: "登录中...",
-      serverError: "无法连接服务器，请检查后端是否启动",
     },
   },
 } as const;
