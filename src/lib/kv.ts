@@ -2,24 +2,20 @@ import { siteConfig } from "@/data/siteConfig";
 
 const KV_KEY = "site_config";
 
-let kvModule: any = null;
-
-async function getKv() {
-  if (kvModule !== null) return kvModule;
+async function getEdgeConfig() {
   try {
-    kvModule = await import("@vercel/kv");
-    return kvModule;
+    const edgeConfig = await import("@vercel/edge-config");
+    return edgeConfig;
   } catch {
-    kvModule = null;
     return null;
   }
 }
 
 export async function getConfig() {
-  const kv = await getKv();
-  if (!kv) return siteConfig;
+  const ec = await getEdgeConfig();
+  if (!ec) return siteConfig;
   try {
-    const stored = await kv.get(KV_KEY);
+    const stored = await ec.get(KV_KEY);
     if (stored && typeof stored === "object") {
       return { ...siteConfig, ...(stored as Record<string, unknown>) };
     }
@@ -28,7 +24,35 @@ export async function getConfig() {
 }
 
 export async function saveConfig(config: Record<string, unknown>) {
-  const kv = await getKv();
-  if (!kv) throw new Error("KV storage not available");
-  await kv.set(KV_KEY, config);
+  const edgeConfigId = process.env.EDGE_CONFIG_ID;
+  const vercelToken = process.env.VERCEL_API_TOKEN;
+
+  if (!edgeConfigId || !vercelToken) {
+    throw new Error("EDGE_CONFIG_ID and VERCEL_API_TOKEN environment variables are required");
+  }
+
+  const res = await fetch(
+    `https://api.vercel.com/v1/edge-config/${edgeConfigId}/items`,
+    {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${vercelToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        items: [
+          {
+            operation: "upsert",
+            key: KV_KEY,
+            value: config,
+          },
+        ],
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to save config: ${err}`);
+  }
 }

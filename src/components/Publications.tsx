@@ -25,12 +25,12 @@ export default function Publications() {
   const config = useConfig();
 
   return (
-    <SectionWrapper id="publications">
+    <SectionWrapper id="publications" variant="alt1">
       <div className="space-y-4 mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-zinc-900">
+        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
           {t.publications.title}
         </h2>
-        <div className="w-12 h-[2px] bg-gradient-to-r from-cyan-600 to-violet-600" />
+        <div className="w-16 h-1 rounded-full bg-gradient-to-r from-cyan-500 to-violet-500" />
       </div>
 
       <div className="space-y-4">
@@ -43,18 +43,18 @@ export default function Publications() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="glass-card rounded-xl p-6 transition-all duration-300 hover:-translate-y-0.5"
+              className="glass-card card-accent-top rounded-xl p-6 group"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-2">
-                <h3 className="text-sm font-semibold text-zinc-800">{pub.title}</h3>
+                <h3 className="text-sm font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">{pub.title}</h3>
                 <span
-                  className={`shrink-0 px-2 py-0.5 text-[10px] rounded border ${status.color}`}
+                  className={`shrink-0 px-2.5 py-0.5 text-[10px] rounded-md border ${status.color}`}
                 >
                   {t.publications.status[status.key]}
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 mb-1">{pub.venue}</p>
-              <p className="text-xs text-zinc-500">{pub.contribution}</p>
+              <p className="text-xs text-gray-400 mb-1">{pub.venue}</p>
+              <p className="text-xs text-gray-500">{pub.contribution}</p>
             </motion.div>
           );
         })}

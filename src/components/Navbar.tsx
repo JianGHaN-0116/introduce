@@ -35,7 +35,7 @@ export default function Navbar() {
       transition={{ duration: 0.5 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "py-3 bg-white/80 backdrop-blur-xl border-b border-zinc-200/60 shadow-sm"
+          ? "py-3 bg-white/80 backdrop-blur-xl border-b border-indigo-100/60 shadow-sm"
           : "py-5 bg-transparent"
       }`}
     >
@@ -52,15 +52,15 @@ export default function Navbar() {
             <a
               key={item.href}
               href={item.href}
-              className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors duration-200 relative group"
+              className="text-sm text-gray-500 hover:text-indigo-600 transition-colors duration-200 relative group"
             >
               {item.label}
-              <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gradient-to-r from-cyan-600 to-violet-600 group-hover:w-full transition-all duration-300" />
+              <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-gradient-to-r from-cyan-500 to-violet-500 group-hover:w-full transition-all duration-300" />
             </a>
           ))}
           <button
             onClick={toggleLang}
-            className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-600 transition-colors duration-200"
+            className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-indigo-500 transition-colors duration-200"
             title={lang === "en" ? "切换中文" : "Switch to English"}
           >
             <Globe size={14} />
@@ -71,13 +71,13 @@ export default function Navbar() {
         <div className="md:hidden flex items-center gap-3">
           <button
             onClick={toggleLang}
-            className="flex items-center gap-1 text-zinc-400 hover:text-zinc-600 transition-colors"
+            className="flex items-center gap-1 text-gray-400 hover:text-indigo-500 transition-colors"
           >
             <Globe size={14} />
             <span className="text-xs uppercase">{lang}</span>
           </button>
           <button
-            className="text-zinc-600 hover:text-zinc-900"
+            className="text-gray-600 hover:text-indigo-600"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -91,7 +91,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white/95 backdrop-blur-xl border-b border-zinc-200/60"
+            className="md:hidden bg-white/95 backdrop-blur-xl border-b border-indigo-100/60"
           >
             <div className="px-6 py-4 flex flex-col gap-4">
               {navItems.map((item) => (
@@ -99,7 +99,7 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
+                  className="text-sm text-gray-500 hover:text-indigo-600 transition-colors"
                 >
                   {item.label}
                 </a>
