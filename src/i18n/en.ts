@@ -80,10 +80,13 @@ const en = {
     },
     login: {
       title: "Admin Login",
-      placeholder: "Enter access token",
+      placeholder: "Enter token",
       button: "Enter Admin",
       error: "Invalid token, please try again",
-      hint: "Enter the admin access token",
+      hint: "Drop key file or enter token",
+      dropKey: "Drop key file here",
+      orSelect: "or click to select file",
+      or: "or",
     },
   },
 } as const;

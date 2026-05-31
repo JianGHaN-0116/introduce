@@ -14,6 +14,8 @@ import {
   ArrowLeft,
   Lock,
   LogOut,
+  KeyRound,
+  Usb,
 } from "lucide-react";
 import { LangProvider, useLang } from "@/components/LangProvider";
 
@@ -53,6 +55,7 @@ function AdminContent() {
   const [authenticated, setAuthenticated] = useState(false);
   const [tokenInput, setTokenInput] = useState("");
   const [tokenError, setTokenError] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
   const [config, setConfig] = useState(JSON.parse(JSON.stringify(defaultConfig)));
   const [activeSection, setActiveSection] = useState<SectionKey>("basic");
   const [saved, setSaved] = useState(false);
@@ -71,8 +74,8 @@ function AdminContent() {
     }
   }, []);
 
-  const handleLogin = async () => {
-    const hash = await sha256(tokenInput);
+  const verifyAndLogin = async (secret: string) => {
+    const hash = await sha256(secret.trim());
     if (hash === ADMIN_TOKEN_HASH) {
       setAuthenticated(true);
       setTokenError(false);
@@ -80,6 +83,31 @@ function AdminContent() {
     } else {
       setTokenError(true);
     }
+  };
+
+  const handleLogin = async () => {
+    await verifyAndLogin(tokenInput);
+  };
+
+  const handleKeyFile = async (file: File) => {
+    try {
+      const text = await file.text();
+      await verifyAndLogin(text);
+    } catch {
+      setTokenError(true);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleKeyFile(file);
+  };
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleKeyFile(file);
   };
 
   const handleLogout = () => {
@@ -187,22 +215,59 @@ function AdminContent() {
             <p className="text-xs text-white/25 mb-6">
               {t.admin.login.hint}
             </p>
-            <div className="space-y-3">
+
+            <div
+              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={handleDrop}
+              className={`relative border-2 border-dashed rounded-xl p-6 mb-4 transition-all cursor-pointer ${
+                dragOver
+                  ? "border-cyan-400/40 bg-cyan-400/5"
+                  : "border-white/10 hover:border-white/20"
+              }`}
+              onClick={() => document.getElementById("keyfile-input")?.click()}
+            >
               <input
-                type="password"
-                value={tokenInput}
-                onChange={(e) => {
-                  setTokenInput(e.target.value);
-                  setTokenError(false);
-                }}
-                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                placeholder={t.admin.login.placeholder}
-                className={`w-full bg-white/[0.03] border rounded-lg px-4 py-3 text-sm text-white/70 focus:outline-none transition-colors ${
-                  tokenError
-                    ? "border-red-500/30 focus:border-red-500/50"
-                    : "border-white/10 focus:border-cyan-500/30"
-                }`}
+                id="keyfile-input"
+                type="file"
+                accept=".key,.txt,.secret,*"
+                className="hidden"
+                onChange={handleFileInput}
               />
+              <Usb size={24} className={`mx-auto mb-3 ${dragOver ? "text-cyan-400/70" : "text-white/20"}`} />
+              <p className="text-xs text-white/40 mb-1">
+                {t.admin.login.dropKey}
+              </p>
+              <p className="text-[10px] text-white/20">
+                {t.admin.login.orSelect}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex-1 h-px bg-white/5" />
+              <span className="text-[10px] text-white/15 uppercase">{t.admin.login.or}</span>
+              <div className="flex-1 h-px bg-white/5" />
+            </div>
+
+            <div className="space-y-3">
+              <div className="relative">
+                <KeyRound size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
+                <input
+                  type="password"
+                  value={tokenInput}
+                  onChange={(e) => {
+                    setTokenInput(e.target.value);
+                    setTokenError(false);
+                  }}
+                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                  placeholder={t.admin.login.placeholder}
+                  className={`w-full bg-white/[0.03] border rounded-lg pl-9 pr-4 py-3 text-sm text-white/70 focus:outline-none transition-colors ${
+                    tokenError
+                      ? "border-red-500/30 focus:border-red-500/50"
+                      : "border-white/10 focus:border-cyan-500/30"
+                  }`}
+                />
+              </div>
               {tokenError && (
                 <p className="text-xs text-red-400/70">{t.admin.login.error}</p>
               )}

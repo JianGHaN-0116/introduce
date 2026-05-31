@@ -78,10 +78,13 @@ const zh = {
     },
     login: {
       title: "管理员登录",
-      placeholder: "请输入访问令牌",
+      placeholder: "输入令牌",
       button: "进入管理",
       error: "令牌无效，请重试",
-      hint: "请输入管理员令牌",
+      hint: "拖拽密钥文件或输入令牌",
+      dropKey: "拖拽密钥文件到此处",
+      orSelect: "或点击选择文件",
+      or: "或",
     },
   },
 } as const;
