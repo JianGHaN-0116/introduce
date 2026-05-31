@@ -7,9 +7,6 @@ export const siteConfig = {
   email: "jianghan@example.com",
   github: "https://github.com/JianGHaN-0116",
   githubUsername: "JianGHaN-0116",
-  scholar: "https://scholar.google.com",
-  linkedin: "https://linkedin.com/in/jianghan",
-  blog: "https://jianghan.dev",
   slogan: "Securing the digital world, one packet at a time.",
   avatar: "https://avatars.githubusercontent.com/u/240411628?v=4",
 

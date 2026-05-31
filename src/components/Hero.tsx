@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { siteConfig } from "@/data/siteConfig";
+import { useConfig } from "./ConfigProvider";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { useLang } from "./LangProvider";
 
@@ -20,6 +20,7 @@ const techRadar = [
 
 export default function Hero() {
   const { t } = useLang();
+  const config = useConfig();
 
   return (
     <section
@@ -33,9 +34,9 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-xs text-white/50 mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              {siteConfig.subtitle}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200 bg-white text-xs text-zinc-500 mb-6 shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              {config.subtitle}
             </div>
           </motion.div>
 
@@ -47,10 +48,10 @@ export default function Hero() {
               delay: 0.1,
               ease: [0.25, 0.46, 0.45, 0.94],
             }}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] text-zinc-900"
           >
             {t.hero.greeting}{" "}
-            <span className="gradient-text-hero">{siteConfig.name}</span>
+            <span className="gradient-text-hero">{config.name}</span>
           </motion.h1>
 
           <motion.p
@@ -61,9 +62,9 @@ export default function Hero() {
               delay: 0.2,
               ease: [0.25, 0.46, 0.45, 0.94],
             }}
-            className="text-base md:text-lg text-white/40 leading-relaxed max-w-xl"
+            className="text-base md:text-lg text-zinc-500 leading-relaxed max-w-xl"
           >
-            {siteConfig.heroDescription}
+            {config.heroDescription}
           </motion.p>
 
           <motion.div
@@ -78,7 +79,7 @@ export default function Hero() {
           >
             <a
               href="#projects"
-              className="group inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-[#050510] text-sm font-medium hover:bg-white/90 transition-all duration-200"
+              className="group inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-800 transition-all duration-200 shadow-sm"
             >
               {t.hero.viewProjects}
               <ArrowRight
@@ -88,7 +89,7 @@ export default function Hero() {
             </a>
             <a
               href="#contact"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 text-sm font-medium text-white/70 hover:text-white hover:border-white/20 hover:bg-white/[0.03] transition-all duration-200"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-zinc-200 text-sm font-medium text-zinc-600 hover:text-zinc-900 hover:border-zinc-300 hover:bg-white transition-all duration-200"
             >
               {t.hero.contactMe}
             </a>
@@ -102,15 +103,15 @@ export default function Hero() {
           className="lg:col-span-2 hidden lg:flex items-center justify-center"
         >
           <div className="relative w-80 h-80">
-            <div className="absolute inset-0 rounded-full border border-white/5" />
-            <div className="absolute inset-8 rounded-full border border-white/5" />
-            <div className="absolute inset-16 rounded-full border border-white/5" />
+            <div className="absolute inset-0 rounded-full border border-zinc-200" />
+            <div className="absolute inset-8 rounded-full border border-zinc-100" />
+            <div className="absolute inset-16 rounded-full border border-zinc-100" />
 
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-white/10 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-100 to-violet-100 border border-zinc-200 flex items-center justify-center">
                 <img
-                  src={siteConfig.avatar}
-                  alt={siteConfig.name}
+                  src={config.avatar}
+                  alt={config.name}
                   className="w-14 h-14 rounded-full object-cover"
                 />
               </div>
@@ -119,13 +120,13 @@ export default function Hero() {
             {techRadar.map((item, i) => (
               <motion.div
                 key={i}
-                className="absolute text-[10px] text-white/30 whitespace-nowrap"
+                className="absolute text-[10px] text-zinc-400 whitespace-nowrap"
                 style={{ left: `${item.x}%`, top: `${item.y}%` }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 + i * 0.05 }}
               >
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-white/5 bg-white/[0.02]">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-zinc-200 bg-white text-zinc-500 shadow-sm">
                   {item.label}
                 </span>
               </motion.div>
@@ -139,7 +140,7 @@ export default function Hero() {
         animate={{ y: [0, 8, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
       >
-        <ChevronDown size={20} className="text-white/20" />
+        <ChevronDown size={20} className="text-zinc-300" />
       </motion.div>
     </section>
   );

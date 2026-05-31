@@ -18,20 +18,9 @@ import {
   KeyRound,
   Eye,
   EyeOff,
+  Loader2,
 } from "lucide-react";
 import { LangProvider, useLang } from "@/components/LangProvider";
-
-const ADMIN_USERNAME_HASH =
-  "c46886b0b472784a6c50bb94f5f5aa091b41b65c7ec2eb5461f44e60796f4479";
-const ADMIN_PASSWORD_HASH =
-  "091131ec9c517689297ba809b94c38a82562287421a06201f45942e229d61907";
-
-async function sha256(message: string): Promise<string> {
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-}
 
 type SectionKey =
   | "basic"
@@ -60,53 +49,95 @@ function AdminContent() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [token, setToken] = useState("");
   const [config, setConfig] = useState(JSON.parse(JSON.stringify(defaultConfig)));
   const [activeSection, setActiveSection] = useState<SectionKey>("basic");
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    const storedAuth = sessionStorage.getItem("admin_auth");
-    if (storedAuth === "true") {
+    const storedToken = sessionStorage.getItem("admin_token");
+    if (storedToken) {
+      setToken(storedToken);
       setAuthenticated(true);
-    }
-    const stored = localStorage.getItem("siteConfig");
-    if (stored) {
-      try {
-        setConfig(JSON.parse(stored));
-      } catch {}
     }
   }, []);
 
+  useEffect(() => {
+    if (authenticated) {
+      fetch("/api/config")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && typeof data === "object") {
+            setConfig({ ...JSON.parse(JSON.stringify(defaultConfig)), ...data });
+          }
+        })
+        .catch(() => {});
+    }
+  }, [authenticated]);
+
   const handleLogin = async () => {
-    const usernameHash = await sha256(username);
-    const passwordHash = await sha256(password);
-    if (usernameHash === ADMIN_USERNAME_HASH && passwordHash === ADMIN_PASSWORD_HASH) {
-      setAuthenticated(true);
-      setLoginError(false);
-      sessionStorage.setItem("admin_auth", "true");
-    } else {
+    setLoginLoading(true);
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setToken(data.token);
+        setAuthenticated(true);
+        setLoginError(false);
+        sessionStorage.setItem("admin_token", data.token);
+      } else {
+        setLoginError(true);
+      }
+    } catch {
       setLoginError(true);
+    } finally {
+      setLoginLoading(false);
     }
   };
 
   const handleLogout = () => {
     setAuthenticated(false);
-    sessionStorage.removeItem("admin_auth");
+    setToken("");
+    sessionStorage.removeItem("admin_token");
     setUsername("");
     setPassword("");
   };
 
-  const handleSave = () => {
-    localStorage.setItem("siteConfig", JSON.stringify(config));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/admin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ config }),
+      });
+      if (res.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      } else {
+        alert("保存失败，请重新登录");
+        handleLogout();
+      }
+    } catch {
+      alert("保存失败，请检查网络连接");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleReset = () => {
     if (confirm("确定要重置为默认配置吗？")) {
       setConfig(JSON.parse(JSON.stringify(defaultConfig)));
-      localStorage.removeItem("siteConfig");
     }
   };
 
@@ -182,58 +213,69 @@ function AdminContent() {
     setConfig(newConfig);
   };
 
+  const inputCls =
+    "w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-700 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-100 transition-colors";
+  const textareaCls =
+    "w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-700 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-100 resize-none transition-colors";
+  const smallInputCls =
+    "w-full bg-white border border-zinc-200 rounded px-2 py-1.5 text-xs text-zinc-700 focus:outline-none focus:border-cyan-400 transition-colors";
+  const smallTextareaCls =
+    "w-full bg-white border border-zinc-200 rounded px-2 py-1.5 text-xs text-zinc-700 focus:outline-none focus:border-cyan-400 resize-none transition-colors";
+
   if (!authenticated) {
     return (
-      <div className="min-h-screen bg-[#050510] flex items-center justify-center px-6">
+      <div className="min-h-screen bg-zinc-50 flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
           <div className="glass-card rounded-2xl p-8 text-center">
-            <div className="w-14 h-14 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center mx-auto mb-6">
-              <Lock size={22} className="text-cyan-400/60" />
+            <div className="w-14 h-14 rounded-xl bg-cyan-50 border border-cyan-100 flex items-center justify-center mx-auto mb-6">
+              <Lock size={22} className="text-cyan-600" />
             </div>
-            <h1 className="text-lg font-bold text-white/80 mb-1">
+            <h1 className="text-lg font-bold text-zinc-800 mb-1">
               {t.admin.login.title}
             </h1>
-            <p className="text-xs text-white/25 mb-6">
+            <p className="text-xs text-zinc-400 mb-6">
               {t.admin.login.hint}
             </p>
 
             <div className="space-y-3">
               <div className="relative">
-                <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
+                <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => { setUsername(e.target.value); setLoginError(false); }}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                   placeholder={t.admin.login.username}
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-lg pl-9 pr-4 py-3 text-sm text-white/70 focus:outline-none focus:border-cyan-500/30 transition-colors"
+                  className="w-full bg-white border border-zinc-200 rounded-lg pl-9 pr-4 py-3 text-sm text-zinc-700 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-100 transition-colors"
                 />
               </div>
               <div className="relative">
-                <KeyRound size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
+                <KeyRound size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setLoginError(false); }}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
                   placeholder={t.admin.login.password}
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-lg pl-9 pr-10 py-3 text-sm text-white/70 focus:outline-none focus:border-cyan-500/30 transition-colors"
+                  className="w-full bg-white border border-zinc-200 rounded-lg pl-9 pr-10 py-3 text-sm text-zinc-700 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-100 transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/40 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
                 >
                   {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
               {loginError && (
-                <p className="text-xs text-red-400/70">{t.admin.login.error}</p>
+                <p className="text-xs text-red-500">{t.admin.login.error}</p>
               )}
               <button
                 onClick={handleLogin}
-                className="w-full py-3 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-sm font-medium hover:bg-cyan-500/20 transition-all"
+                disabled={loginLoading}
+                className="w-full py-3 rounded-lg bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
+                {loginLoading && <Loader2 size={14} className="animate-spin" />}
                 {t.admin.login.button}
               </button>
             </div>
@@ -241,7 +283,7 @@ function AdminContent() {
           <div className="mt-6 text-center">
             <a
               href="/"
-              className="text-xs text-white/20 hover:text-white/40 transition-colors"
+              className="text-xs text-zinc-400 hover:text-zinc-600 transition-colors"
             >
               ← {t.nav.home}
             </a>
@@ -261,27 +303,24 @@ function AdminContent() {
         { key: "email", label: "邮箱 / Email" },
         { key: "github", label: "GitHub URL" },
         { key: "githubUsername", label: "GitHub Username" },
-        { key: "scholar", label: "Google Scholar" },
-        { key: "linkedin", label: "LinkedIn" },
-        { key: "blog", label: "博客 / Blog" },
         { key: "slogan", label: "Slogan" },
         { key: "avatar", label: "头像 URL / Avatar URL" },
       ].map(({ key, label }) => (
         <div key={key}>
-          <label className="block text-xs text-white/30 mb-1">{label}</label>
+          <label className="block text-xs text-zinc-500 mb-1">{label}</label>
           {key === "heroDescription" ? (
             <textarea
               value={config[key] as string}
               onChange={(e) => updateField(key, e.target.value)}
               rows={3}
-              className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2 text-sm text-white/70 focus:outline-none focus:border-cyan-500/30 resize-none"
+              className={textareaCls}
             />
           ) : (
             <input
               type="text"
               value={config[key] as string}
               onChange={(e) => updateField(key, e.target.value)}
-              className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2 text-sm text-white/70 focus:outline-none focus:border-cyan-500/30"
+              className={inputCls}
             />
           )}
         </div>
@@ -292,30 +331,30 @@ function AdminContent() {
   const renderAboutSection = () => (
     <div className="space-y-4">
       <div>
-        <label className="block text-xs text-white/30 mb-1">背景介绍 / Background</label>
+        <label className="block text-xs text-zinc-500 mb-1">背景介绍 / Background</label>
         <textarea
           value={config.about.background}
           onChange={(e) => updateField("about.background", e.target.value)}
           rows={3}
-          className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2 text-sm text-white/70 focus:outline-none focus:border-cyan-500/30 resize-none"
+          className={textareaCls}
         />
       </div>
       <div>
-        <label className="block text-xs text-white/30 mb-1">研究兴趣 / Interests</label>
+        <label className="block text-xs text-zinc-500 mb-1">研究兴趣 / Interests</label>
         <textarea
           value={config.about.interests}
           onChange={(e) => updateField("about.interests", e.target.value)}
           rows={3}
-          className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2 text-sm text-white/70 focus:outline-none focus:border-cyan-500/30 resize-none"
+          className={textareaCls}
         />
       </div>
       <div>
-        <label className="block text-xs text-white/30 mb-2">卡片 / Cards</label>
+        <label className="block text-xs text-zinc-500 mb-2">卡片 / Cards</label>
         {config.about.cards.map((card: { title: string; description: string; icon: string }, i: number) => (
-          <div key={i} className="mb-3 p-3 border border-white/5 rounded-lg">
+          <div key={i} className="mb-3 p-3 border border-zinc-200 rounded-lg bg-zinc-50">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-white/40">卡片 {i + 1}</span>
-              <button onClick={() => removeItem("about.cards", i)} className="text-red-400/50 hover:text-red-400">
+              <span className="text-xs text-zinc-500">卡片 {i + 1}</span>
+              <button onClick={() => removeItem("about.cards", i)} className="text-red-400 hover:text-red-500">
                 <Trash2 size={12} />
               </button>
             </div>
@@ -324,20 +363,20 @@ function AdminContent() {
               value={card.title}
               onChange={(e) => updateField(`about.cards.${i}.title`, e.target.value)}
               placeholder="标题"
-              className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 mb-2 focus:outline-none focus:border-cyan-500/30"
+              className={`${smallInputCls} mb-2`}
             />
             <textarea
               value={card.description}
               onChange={(e) => updateField(`about.cards.${i}.description`, e.target.value)}
               placeholder="描述"
               rows={2}
-              className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30 resize-none"
+              className={smallTextareaCls}
             />
           </div>
         ))}
         <button
           onClick={() => addItem("about.cards", { title: "新卡片", description: "描述", icon: "flask" })}
-          className="text-xs text-cyan-400/50 hover:text-cyan-400 flex items-center gap-1"
+          className="text-xs text-cyan-600 hover:text-cyan-700 flex items-center gap-1"
         >
           <Plus size={12} /> {t.admin.add}
         </button>
@@ -355,24 +394,24 @@ function AdminContent() {
       {items.map((item, i) => (
         <div key={i} className="mb-3">
           <div
-            className="flex items-center justify-between p-3 border border-white/5 rounded-lg cursor-pointer hover:border-white/10"
+            className="flex items-center justify-between p-3 border border-zinc-200 rounded-lg cursor-pointer hover:border-zinc-300 bg-white"
             onClick={() => toggleExpand(`${path}.${i}`)}
           >
             <div className="flex items-center gap-2">
-              {expandedItems[`${path}.${i}`] ? <ChevronDown size={12} className="text-white/30" /> : <ChevronRight size={12} className="text-white/30" />}
-              <span className="text-xs text-white/50">
+              {expandedItems[`${path}.${i}`] ? <ChevronDown size={12} className="text-zinc-400" /> : <ChevronRight size={12} className="text-zinc-400" />}
+              <span className="text-xs text-zinc-600">
                 {String(item.title || item.name || `项目 ${i + 1}`)}
               </span>
             </div>
             <button
               onClick={(e) => { e.stopPropagation(); removeItem(path, i); }}
-              className="text-red-400/50 hover:text-red-400"
+              className="text-red-400 hover:text-red-500"
             >
               <Trash2 size={12} />
             </button>
           </div>
           {expandedItems[`${path}.${i}`] && (
-            <div className="p-3 border border-white/5 border-t-0 rounded-b-lg">
+            <div className="p-3 border border-zinc-200 border-t-0 rounded-b-lg bg-zinc-50">
               {renderItem(item, i)}
             </div>
           )}
@@ -380,7 +419,7 @@ function AdminContent() {
       ))}
       <button
         onClick={() => addItem(path, templates)}
-        className="text-xs text-cyan-400/50 hover:text-cyan-400 flex items-center gap-1 mt-2"
+        className="text-xs text-cyan-600 hover:text-cyan-700 flex items-center gap-1 mt-2"
       >
         <Plus size={12} /> {t.admin.add}
       </button>
@@ -394,9 +433,9 @@ function AdminContent() {
       tags: ["Tag1"],
     }, (item, i) => (
       <div className="space-y-2">
-        <input type="text" value={String(item.title)} onChange={(e) => updateField(`research.${i}.title`, e.target.value)} placeholder="标题" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
-        <textarea value={String(item.description)} onChange={(e) => updateField(`research.${i}.description`, e.target.value)} placeholder="描述" rows={2} className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30 resize-none" />
-        <input type="text" value={((item.tags as string[]) || []).join(", ")} onChange={(e) => updateField(`research.${i}.tags`, e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="标签（逗号分隔）" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
+        <input type="text" value={String(item.title)} onChange={(e) => updateField(`research.${i}.title`, e.target.value)} placeholder="标题" className={smallInputCls} />
+        <textarea value={String(item.description)} onChange={(e) => updateField(`research.${i}.description`, e.target.value)} placeholder="描述" rows={2} className={smallTextareaCls} />
+        <input type="text" value={((item.tags as string[]) || []).join(", ")} onChange={(e) => updateField(`research.${i}.tags`, e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="标签（逗号分隔）" className={smallInputCls} />
       </div>
     ));
 
@@ -410,12 +449,12 @@ function AdminContent() {
       demo: "",
     }, (item, i) => (
       <div className="space-y-2">
-        <input type="text" value={String(item.name)} onChange={(e) => updateField(`projects.${i}.name`, e.target.value)} placeholder="项目名" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
-        <textarea value={String(item.description)} onChange={(e) => updateField(`projects.${i}.description`, e.target.value)} placeholder="描述" rows={2} className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30 resize-none" />
-        <input type="text" value={((item.techStack as string[]) || []).join(", ")} onChange={(e) => updateField(`projects.${i}.techStack`, e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="技术栈（逗号分隔）" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
-        <input type="text" value={String(item.highlights || "")} onChange={(e) => updateField(`projects.${i}.highlights`, e.target.value)} placeholder="亮点" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
-        <input type="text" value={String(item.github || "")} onChange={(e) => updateField(`projects.${i}.github`, e.target.value)} placeholder="GitHub 链接" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
-        <input type="text" value={String(item.demo || "")} onChange={(e) => updateField(`projects.${i}.demo`, e.target.value)} placeholder="Demo 链接" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
+        <input type="text" value={String(item.name)} onChange={(e) => updateField(`projects.${i}.name`, e.target.value)} placeholder="项目名" className={smallInputCls} />
+        <textarea value={String(item.description)} onChange={(e) => updateField(`projects.${i}.description`, e.target.value)} placeholder="描述" rows={2} className={smallTextareaCls} />
+        <input type="text" value={((item.techStack as string[]) || []).join(", ")} onChange={(e) => updateField(`projects.${i}.techStack`, e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="技术栈（逗号分隔）" className={smallInputCls} />
+        <input type="text" value={String(item.highlights || "")} onChange={(e) => updateField(`projects.${i}.highlights`, e.target.value)} placeholder="亮点" className={smallInputCls} />
+        <input type="text" value={String(item.github || "")} onChange={(e) => updateField(`projects.${i}.github`, e.target.value)} placeholder="GitHub 链接" className={smallInputCls} />
+        <input type="text" value={String(item.demo || "")} onChange={(e) => updateField(`projects.${i}.demo`, e.target.value)} placeholder="Demo 链接" className={smallInputCls} />
       </div>
     ));
 
@@ -427,14 +466,14 @@ function AdminContent() {
       contribution: "贡献说明",
     }, (item, i) => (
       <div className="space-y-2">
-        <input type="text" value={String(item.title)} onChange={(e) => updateField(`publications.${i}.title`, e.target.value)} placeholder="论文标题" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
-        <input type="text" value={String(item.venue)} onChange={(e) => updateField(`publications.${i}.venue`, e.target.value)} placeholder="期刊/会议" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
-        <select value={String(item.status)} onChange={(e) => updateField(`publications.${i}.status`, e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30">
+        <input type="text" value={String(item.title)} onChange={(e) => updateField(`publications.${i}.title`, e.target.value)} placeholder="论文标题" className={smallInputCls} />
+        <input type="text" value={String(item.venue)} onChange={(e) => updateField(`publications.${i}.venue`, e.target.value)} placeholder="期刊/会议" className={smallInputCls} />
+        <select value={String(item.status)} onChange={(e) => updateField(`publications.${i}.status`, e.target.value)} className={smallInputCls}>
           <option value="published">Published</option>
           <option value="review">Under Review</option>
           <option value="preprint">Preprint</option>
         </select>
-        <textarea value={String(item.contribution)} onChange={(e) => updateField(`publications.${i}.contribution`, e.target.value)} placeholder="贡献说明" rows={2} className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30 resize-none" />
+        <textarea value={String(item.contribution)} onChange={(e) => updateField(`publications.${i}.contribution`, e.target.value)} placeholder="贡献说明" rows={2} className={smallTextareaCls} />
       </div>
     ));
 
@@ -446,10 +485,10 @@ function AdminContent() {
       description: "描述",
     }, (item, i) => (
       <div className="space-y-2">
-        <input type="text" value={String(item.year)} onChange={(e) => updateField(`experience.${i}.year`, e.target.value)} placeholder="时间" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
-        <input type="text" value={String(item.title)} onChange={(e) => updateField(`experience.${i}.title`, e.target.value)} placeholder="标题" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
-        <input type="text" value={String(item.organization)} onChange={(e) => updateField(`experience.${i}.organization`, e.target.value)} placeholder="组织" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
-        <textarea value={String(item.description)} onChange={(e) => updateField(`experience.${i}.description`, e.target.value)} placeholder="描述" rows={2} className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30 resize-none" />
+        <input type="text" value={String(item.year)} onChange={(e) => updateField(`experience.${i}.year`, e.target.value)} placeholder="时间" className={smallInputCls} />
+        <input type="text" value={String(item.title)} onChange={(e) => updateField(`experience.${i}.title`, e.target.value)} placeholder="标题" className={smallInputCls} />
+        <input type="text" value={String(item.organization)} onChange={(e) => updateField(`experience.${i}.organization`, e.target.value)} placeholder="组织" className={smallInputCls} />
+        <textarea value={String(item.description)} onChange={(e) => updateField(`experience.${i}.description`, e.target.value)} placeholder="描述" rows={2} className={smallTextareaCls} />
       </div>
     ));
 
@@ -459,8 +498,8 @@ function AdminContent() {
       items: ["Skill1"],
     }, (item, i) => (
       <div className="space-y-2">
-        <input type="text" value={String(item.category)} onChange={(e) => updateField(`skills.${i}.category`, e.target.value)} placeholder="分类名" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
-        <input type="text" value={((item.items as string[]) || []).join(", ")} onChange={(e) => updateField(`skills.${i}.items`, e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="技能（逗号分隔）" className="w-full bg-white/[0.03] border border-white/10 rounded px-2 py-1.5 text-xs text-white/70 focus:outline-none focus:border-cyan-500/30" />
+        <input type="text" value={String(item.category)} onChange={(e) => updateField(`skills.${i}.category`, e.target.value)} placeholder="分类名" className={smallInputCls} />
+        <input type="text" value={((item.items as string[]) || []).join(", ")} onChange={(e) => updateField(`skills.${i}.items`, e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="技能（逗号分隔）" className={smallInputCls} />
       </div>
     ));
 
@@ -475,35 +514,35 @@ function AdminContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050510] text-white/70">
+    <div className="min-h-screen bg-zinc-50 text-zinc-700">
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <a href="/" className="text-white/30 hover:text-white/60 transition-colors">
+            <a href="/" className="text-zinc-400 hover:text-zinc-600 transition-colors">
               <ArrowLeft size={18} />
             </a>
             <div>
-              <h1 className="text-xl font-bold text-white/80">{t.admin.title}</h1>
-              <p className="text-xs text-white/25">{t.admin.subtitle}</p>
+              <h1 className="text-xl font-bold text-zinc-800">{t.admin.title}</h1>
+              <p className="text-xs text-zinc-400">{t.admin.subtitle}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={handleImport} className="p-2 rounded-lg border border-white/10 hover:border-white/20 text-white/40 hover:text-white/60 transition-all" title={t.admin.import}>
+            <button onClick={handleImport} className="p-2 rounded-lg border border-zinc-200 hover:border-zinc-300 text-zinc-400 hover:text-zinc-600 transition-all bg-white" title={t.admin.import}>
               <Upload size={14} />
             </button>
-            <button onClick={handleExport} className="p-2 rounded-lg border border-white/10 hover:border-white/20 text-white/40 hover:text-white/60 transition-all" title={t.admin.export}>
+            <button onClick={handleExport} className="p-2 rounded-lg border border-zinc-200 hover:border-zinc-300 text-zinc-400 hover:text-zinc-600 transition-all bg-white" title={t.admin.export}>
               <Download size={14} />
             </button>
-            <button onClick={handleReset} className="p-2 rounded-lg border border-white/10 hover:border-red-500/20 text-white/40 hover:text-red-400/60 transition-all" title={t.admin.reset}>
+            <button onClick={handleReset} className="p-2 rounded-lg border border-zinc-200 hover:border-red-300 text-zinc-400 hover:text-red-500 transition-all bg-white" title={t.admin.reset}>
               <RotateCcw size={14} />
             </button>
-            <button onClick={handleSave} className={`px-4 py-2 rounded-lg text-xs font-medium transition-all ${saved ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/20" : "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20"}`}>
+            <button onClick={handleSave} disabled={saving} className={`px-4 py-2 rounded-lg text-xs font-medium transition-all ${saved ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : "bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-50"}`}>
               <span className="flex items-center gap-1.5">
-                <Save size={12} />
+                {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
                 {saved ? t.admin.saved : t.admin.save}
               </span>
             </button>
-            <button onClick={handleLogout} className="p-2 rounded-lg border border-white/10 hover:border-red-500/20 text-white/40 hover:text-red-400/60 transition-all" title="Logout">
+            <button onClick={handleLogout} className="p-2 rounded-lg border border-zinc-200 hover:border-red-300 text-zinc-400 hover:text-red-500 transition-all bg-white" title="Logout">
               <LogOut size={14} />
             </button>
           </div>
@@ -518,8 +557,8 @@ function AdminContent() {
                   onClick={() => setActiveSection(s.key)}
                   className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-all ${
                     activeSection === s.key
-                      ? "bg-white/[0.05] text-white/80 border border-white/10"
-                      : "text-white/30 hover:text-white/50 hover:bg-white/[0.02]"
+                      ? "bg-white text-zinc-800 border border-zinc-200 shadow-sm"
+                      : "text-zinc-400 hover:text-zinc-600 hover:bg-white/50"
                   }`}
                 >
                   {s.label}
@@ -530,7 +569,7 @@ function AdminContent() {
 
           <div className="md:col-span-3">
             <div className="glass-card rounded-xl p-6">
-              <h2 className="text-sm font-semibold text-white/60 mb-4">
+              <h2 className="text-sm font-semibold text-zinc-600 mb-4">
                 {sections.find((s) => s.key === activeSection)?.label}
               </h2>
               {sectionRenderers[activeSection]()}

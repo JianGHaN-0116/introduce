@@ -54,9 +54,6 @@ const zh = {
     title: "联系方式",
     email: "邮箱",
     github: "GitHub",
-    scholar: "学术主页",
-    linkedin: "领英",
-    blog: "博客",
   },
   admin: {
     title: "内容管理",

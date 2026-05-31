@@ -56,9 +56,6 @@ const en = {
     title: "Contact",
     email: "Email",
     github: "GitHub",
-    scholar: "Google Scholar",
-    linkedin: "LinkedIn",
-    blog: "Blog",
   },
   admin: {
     title: "Content Management",

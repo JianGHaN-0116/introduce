@@ -10,23 +10,26 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import BackgroundEffects from "@/components/BackgroundEffects";
 import { LangProvider } from "@/components/LangProvider";
+import { ConfigProvider } from "@/components/ConfigProvider";
 
 export default function Home() {
   return (
     <LangProvider>
-      <BackgroundEffects />
-      <Navbar />
-      <main className="relative">
-        <Hero />
-        <About />
-        <Research />
-        <Projects />
-        <Publications />
-        <Experience />
-        <Skills />
-        <Contact />
-      </main>
-      <Footer />
+      <ConfigProvider>
+        <BackgroundEffects />
+        <Navbar />
+        <main className="relative">
+          <Hero />
+          <About />
+          <Research />
+          <Projects />
+          <Publications />
+          <Experience />
+          <Skills />
+          <Contact />
+        </main>
+        <Footer />
+      </ConfigProvider>
     </LangProvider>
   );
 }

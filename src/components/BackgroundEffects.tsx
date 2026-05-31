@@ -15,24 +15,17 @@ export default function BackgroundEffects() {
     <div className="fixed inset-0 -z-10 overflow-hidden">
       <div className="absolute inset-0 grid-bg" />
       <div
-        className="absolute -top-1/2 -right-1/4 w-[800px] h-[800px] rounded-full opacity-[0.07]"
+        className="absolute -top-1/2 -right-1/4 w-[800px] h-[800px] rounded-full opacity-[0.15]"
         style={{
           background:
-            "radial-gradient(circle, rgba(34,211,238,0.4) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(8,145,178,0.15) 0%, transparent 70%)",
         }}
       />
       <div
-        className="absolute -bottom-1/2 -left-1/4 w-[600px] h-[600px] rounded-full opacity-[0.05]"
+        className="absolute -bottom-1/2 -left-1/4 w-[600px] h-[600px] rounded-full opacity-[0.12]"
         style={{
           background:
-            "radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 70%)",
-        }}
-      />
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-[0.03]"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(52,211,153,0.4) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%)",
         }}
       />
     </div>
