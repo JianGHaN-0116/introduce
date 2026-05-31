@@ -2,7 +2,7 @@
   "name": "personal-site",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://jianghan-0116.github.io/Introduce",
+  "homepage": "https://jianghan-0116.github.io/introduce",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
