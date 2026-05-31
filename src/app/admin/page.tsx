@@ -14,21 +14,14 @@ import {
   ArrowLeft,
   Lock,
   LogOut,
+  User,
   KeyRound,
-  Usb,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { LangProvider, useLang } from "@/components/LangProvider";
 
-const ADMIN_TOKEN_HASH =
-  process.env.NEXT_PUBLIC_ADMIN_TOKEN_HASH ||
-  "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9";
-
-async function sha256(message: string): Promise<string> {
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-}
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 type SectionKey =
   | "basic"
@@ -53,18 +46,30 @@ function AdminContent() {
   ];
 
   const [authenticated, setAuthenticated] = useState(false);
-  const [tokenInput, setTokenInput] = useState("");
-  const [tokenError, setTokenError] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
   const [config, setConfig] = useState(JSON.parse(JSON.stringify(defaultConfig)));
   const [activeSection, setActiveSection] = useState<SectionKey>("basic");
   const [saved, setSaved] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    const storedAuth = sessionStorage.getItem("admin_auth");
-    if (storedAuth === "true") {
-      setAuthenticated(true);
+    const token = sessionStorage.getItem("admin_token");
+    if (token) {
+      fetch(`${API_URL}/api/verify`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          if (res.ok) {
+            setAuthenticated(true);
+          } else {
+            sessionStorage.removeItem("admin_token");
+          }
+        })
+        .catch(() => {});
     }
     const stored = localStorage.getItem("siteConfig");
     if (stored) {
@@ -74,46 +79,34 @@ function AdminContent() {
     }
   }, []);
 
-  const verifyAndLogin = async (secret: string) => {
-    const hash = await sha256(secret.trim());
-    if (hash === ADMIN_TOKEN_HASH) {
-      setAuthenticated(true);
-      setTokenError(false);
-      sessionStorage.setItem("admin_auth", "true");
-    } else {
-      setTokenError(true);
-    }
-  };
-
   const handleLogin = async () => {
-    await verifyAndLogin(tokenInput);
-  };
-
-  const handleKeyFile = async (file: File) => {
+    setLoginLoading(true);
+    setLoginError("");
     try {
-      const text = await file.text();
-      await verifyAndLogin(text);
+      const res = await fetch(`${API_URL}/api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        sessionStorage.setItem("admin_token", data.token);
+        setAuthenticated(true);
+      } else {
+        setLoginError(data.error || t.admin.login.error);
+      }
     } catch {
-      setTokenError(true);
+      setLoginError(t.admin.login.serverError);
+    } finally {
+      setLoginLoading(false);
     }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    const file = e.dataTransfer.files[0];
-    if (file) handleKeyFile(file);
-  };
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) handleKeyFile(file);
   };
 
   const handleLogout = () => {
     setAuthenticated(false);
-    sessionStorage.removeItem("admin_auth");
-    setTokenInput("");
+    sessionStorage.removeItem("admin_token");
+    setUsername("");
+    setPassword("");
   };
 
   const handleSave = () => {
@@ -216,66 +209,45 @@ function AdminContent() {
               {t.admin.login.hint}
             </p>
 
-            <div
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={handleDrop}
-              className={`relative border-2 border-dashed rounded-xl p-6 mb-4 transition-all cursor-pointer ${
-                dragOver
-                  ? "border-cyan-400/40 bg-cyan-400/5"
-                  : "border-white/10 hover:border-white/20"
-              }`}
-              onClick={() => document.getElementById("keyfile-input")?.click()}
-            >
-              <input
-                id="keyfile-input"
-                type="file"
-                accept=".key,.txt,.secret,*"
-                className="hidden"
-                onChange={handleFileInput}
-              />
-              <Usb size={24} className={`mx-auto mb-3 ${dragOver ? "text-cyan-400/70" : "text-white/20"}`} />
-              <p className="text-xs text-white/40 mb-1">
-                {t.admin.login.dropKey}
-              </p>
-              <p className="text-[10px] text-white/20">
-                {t.admin.login.orSelect}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex-1 h-px bg-white/5" />
-              <span className="text-[10px] text-white/15 uppercase">{t.admin.login.or}</span>
-              <div className="flex-1 h-px bg-white/5" />
-            </div>
-
             <div className="space-y-3">
+              <div className="relative">
+                <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => { setUsername(e.target.value); setLoginError(""); }}
+                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                  placeholder={t.admin.login.username}
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-lg pl-9 pr-4 py-3 text-sm text-white/70 focus:outline-none focus:border-cyan-500/30 transition-colors"
+                />
+              </div>
               <div className="relative">
                 <KeyRound size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
                 <input
-                  type="password"
-                  value={tokenInput}
-                  onChange={(e) => {
-                    setTokenInput(e.target.value);
-                    setTokenError(false);
-                  }}
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setLoginError(""); }}
                   onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                  placeholder={t.admin.login.placeholder}
-                  className={`w-full bg-white/[0.03] border rounded-lg pl-9 pr-4 py-3 text-sm text-white/70 focus:outline-none transition-colors ${
-                    tokenError
-                      ? "border-red-500/30 focus:border-red-500/50"
-                      : "border-white/10 focus:border-cyan-500/30"
-                  }`}
+                  placeholder={t.admin.login.password}
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-lg pl-9 pr-10 py-3 text-sm text-white/70 focus:outline-none focus:border-cyan-500/30 transition-colors"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/40 transition-colors"
+                >
+                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
               </div>
-              {tokenError && (
-                <p className="text-xs text-red-400/70">{t.admin.login.error}</p>
+              {loginError && (
+                <p className="text-xs text-red-400/70">{loginError}</p>
               )}
               <button
                 onClick={handleLogin}
-                className="w-full py-3 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-sm font-medium hover:bg-cyan-500/20 transition-all"
+                disabled={loginLoading}
+                className="w-full py-3 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-sm font-medium hover:bg-cyan-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {t.admin.login.button}
+                {loginLoading ? t.admin.login.loading : t.admin.login.button}
               </button>
             </div>
           </div>

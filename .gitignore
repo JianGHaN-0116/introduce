@@ -42,3 +42,6 @@ next-env.d.ts
 
 # admin key file (never commit!)
 admin.key
+
+# server database
+server/data/
