@@ -5,19 +5,10 @@ import { useConfig } from "./ConfigProvider";
 import SectionWrapper from "./SectionWrapper";
 import { useLang } from "./LangProvider";
 
-const statusMap: Record<string, { color: string; key: "published" | "review" | "preprint" }> = {
-  published: {
-    color: "text-emerald-700 border-emerald-200 bg-emerald-50",
-    key: "published",
-  },
-  review: {
-    color: "text-amber-700 border-amber-200 bg-amber-50",
-    key: "review",
-  },
-  preprint: {
-    color: "text-violet-700 border-violet-200 bg-violet-50",
-    key: "preprint",
-  },
+const statusStyles: Record<string, string> = {
+  published: "text-green-700 bg-green-50 border-green-200",
+  review: "text-yellow-700 bg-yellow-50 border-yellow-200",
+  preprint: "text-violet-700 bg-violet-50 border-violet-200",
 };
 
 export default function Publications() {
@@ -25,17 +16,21 @@ export default function Publications() {
   const config = useConfig();
 
   return (
-    <SectionWrapper id="publications" variant="alt1">
+    <SectionWrapper id="publications" className="bg-neutral-100/50">
       <div className="space-y-4 mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
+        <span className="text-sm text-neutral-400 font-medium tracking-wide uppercase">
           {t.publications.title}
+        </span>
+        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900">
+          Publications
         </h2>
-        <div className="w-16 h-1 rounded-full bg-gradient-to-r from-cyan-500 to-violet-500" />
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {config.publications.map((pub, i) => {
-          const status = statusMap[pub.status] || statusMap.preprint;
+          const statusKey = pub.status as keyof typeof statusStyles;
+          const statusClass = statusStyles[statusKey] || statusStyles.preprint;
+          const statusLabelKey = pub.status as "published" | "review" | "preprint";
           return (
             <motion.div
               key={pub.title}
@@ -43,18 +38,18 @@ export default function Publications() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="glass-card card-accent-top rounded-xl p-6 group"
+              className="group rounded-xl p-5 bg-white border border-neutral-200 hover:border-neutral-400 hover:shadow-lg hover:shadow-neutral-200/50 hover:-translate-y-0.5 transition-all duration-300"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-2">
-                <h3 className="text-sm font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">{pub.title}</h3>
-                <span
-                  className={`shrink-0 px-2.5 py-0.5 text-[10px] rounded-md border ${status.color}`}
-                >
-                  {t.publications.status[status.key]}
+                <h3 className="text-sm font-semibold text-neutral-800 group-hover:text-neutral-600 transition-colors">
+                  {pub.title}
+                </h3>
+                <span className={`shrink-0 px-2.5 py-0.5 text-[10px] rounded-md border ${statusClass}`}>
+                  {t.publications.status[statusLabelKey]}
                 </span>
               </div>
-              <p className="text-xs text-gray-400 mb-1">{pub.venue}</p>
-              <p className="text-xs text-gray-500">{pub.contribution}</p>
+              <p className="text-xs text-neutral-400 mb-1">{pub.venue}</p>
+              <p className="text-xs text-neutral-500">{pub.contribution}</p>
             </motion.div>
           );
         })}

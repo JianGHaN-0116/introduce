@@ -12,62 +12,78 @@ const iconMap = {
   "graduation-cap": GraduationCap,
 };
 
-const cardColors = [
-  { bg: "bg-cyan-50", border: "border-cyan-200", text: "text-cyan-600", hoverBorder: "group-hover:border-cyan-400" },
-  { bg: "bg-violet-50", border: "border-violet-200", text: "text-violet-600", hoverBorder: "group-hover:border-violet-400" },
-  { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-600", hoverBorder: "group-hover:border-emerald-400" },
-];
-
-const cardTitleKeys = ["research", "engineering", "academic"] as const;
-
 export default function About() {
   const { t } = useLang();
   const config = useConfig();
 
   return (
-    <SectionWrapper id="about" variant="alt1">
-      <div className="space-y-4 mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
-          {t.about.title}
-        </h2>
-        <div className="w-16 h-1 rounded-full bg-gradient-to-r from-cyan-500 to-violet-500" />
-      </div>
+    <SectionWrapper id="about">
+      <div className="grid lg:grid-cols-2 gap-16 items-start">
+        <div className="space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <span className="text-sm text-neutral-400 font-medium tracking-wide uppercase">
+              {t.about.title}
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2 text-neutral-900">
+              {config.name}
+            </h2>
+          </motion.div>
 
-      <div className="grid md:grid-cols-2 gap-8 mb-12">
-        <p className="text-gray-500 leading-relaxed text-[15px]">
-          {config.about.background}
-        </p>
-        <p className="text-gray-500 leading-relaxed text-[15px]">
-          {config.about.interests}
-        </p>
-      </div>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-neutral-500 leading-relaxed"
+          >
+            {config.about.background}
+          </motion.p>
 
-      <div className="grid md:grid-cols-3 gap-6">
-        {config.about.cards.map((card, i) => {
-          const Icon = iconMap[card.icon];
-          const titleKey = cardTitleKeys[i];
-          const color = cardColors[i % cardColors.length];
-          return (
-            <motion.div
-              key={card.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="glass-card card-accent-top rounded-xl p-6 group"
-            >
-              <div className={`w-10 h-10 rounded-lg ${color.bg} border ${color.border} ${color.hoverBorder} flex items-center justify-center mb-4 transition-colors`}>
-                <Icon size={18} className={color.text} />
-              </div>
-              <h3 className="text-sm font-semibold mb-2 text-gray-800">
-                {t.about.cards[titleKey]}
-              </h3>
-              <p className="text-xs text-gray-500 leading-relaxed">
-                {card.description}
-              </p>
-            </motion.div>
-          );
-        })}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-neutral-500 leading-relaxed"
+          >
+            {config.about.interests}
+          </motion.p>
+        </div>
+
+        <div className="space-y-4">
+          {config.about.cards.map((card, i) => {
+            const Icon = iconMap[card.icon as keyof typeof iconMap] || FlaskConical;
+            return (
+              <motion.div
+                key={card.title}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="group rounded-xl p-5 bg-white border border-neutral-200 hover:border-neutral-400 hover:shadow-lg hover:shadow-neutral-200/50 hover:-translate-y-0.5 transition-all duration-300"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center shrink-0 group-hover:bg-neutral-200 transition-colors">
+                    <Icon size={18} className="text-neutral-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-neutral-800 mb-1">
+                      {card.title}
+                    </h3>
+                    <p className="text-xs text-neutral-500 leading-relaxed">
+                      {card.description}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </SectionWrapper>
   );

@@ -1,21 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 interface SectionWrapperProps {
   children: ReactNode;
   id?: string;
   className?: string;
-  variant?: "default" | "alt1" | "alt2" | "alt3";
+  variant?: "default" | "alt" | "dark";
 }
-
-const variantStyles = {
-  default: "",
-  alt1: "section-gradient-1",
-  alt2: "section-gradient-2",
-  alt3: "section-gradient-3",
-};
 
 export default function SectionWrapper({
   children,
@@ -23,10 +16,16 @@ export default function SectionWrapper({
   className = "",
   variant = "default",
 }: SectionWrapperProps) {
+  const variantClasses = {
+    default: "bg-neutral-50",
+    alt: "bg-neutral-100/50",
+    dark: "bg-neutral-950 text-neutral-50",
+  };
+
   return (
     <motion.section
       id={id}
-      className={`py-24 px-6 md:px-12 lg:px-24 ${variantStyles[variant]} ${className}`}
+      className={`py-24 md:py-32 px-6 md:px-12 lg:px-24 ${variantClasses[variant]} ${className}`}
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}

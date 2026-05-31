@@ -5,39 +5,32 @@ import { useConfig } from "./ConfigProvider";
 import SectionWrapper from "./SectionWrapper";
 import { useLang } from "./LangProvider";
 
-const categoryColors: Record<string, string> = {
-  programming: "border-cyan-200 bg-cyan-50 text-cyan-700",
-  security: "border-red-200 bg-red-50 text-red-700",
-  "machine learning": "border-violet-200 bg-violet-50 text-violet-700",
-  systems: "border-indigo-200 bg-indigo-50 text-indigo-700",
-  tools: "border-amber-200 bg-amber-50 text-amber-700",
-};
-
-const categoryAccents: Record<string, string> = {
-  programming: "from-cyan-500 to-cyan-400",
-  security: "from-red-500 to-red-400",
-  "machine learning": "from-violet-500 to-violet-400",
-  systems: "from-indigo-500 to-indigo-400",
-  tools: "from-amber-500 to-amber-400",
-};
+const accentColors = [
+  "bg-cyan-500",
+  "bg-violet-500",
+  "bg-emerald-500",
+  "bg-amber-500",
+  "bg-rose-500",
+];
 
 export default function Skills() {
   const { t } = useLang();
   const config = useConfig();
 
   return (
-    <SectionWrapper id="skills" variant="alt3">
+    <SectionWrapper id="skills" className="bg-neutral-100/50">
       <div className="space-y-4 mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
+        <span className="text-sm text-neutral-400 font-medium tracking-wide uppercase">
           {t.skills.title}
+        </span>
+        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900">
+          Skills
         </h2>
-        <div className="w-16 h-1 rounded-full bg-gradient-to-r from-cyan-500 to-violet-500" />
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {config.skills.map((group, i) => {
-          const key = group.category.toLowerCase();
-          const accent = categoryAccents[key] || "from-indigo-500 to-violet-400";
+          const accent = accentColors[i % accentColors.length];
           return (
             <motion.div
               key={group.category}
@@ -45,21 +38,19 @@ export default function Skills() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="glass-card card-accent-top rounded-xl p-6 group"
+              className="group rounded-xl p-5 bg-white border border-neutral-200 hover:border-neutral-400 hover:shadow-lg hover:shadow-neutral-200/50 hover:-translate-y-0.5 transition-all duration-300"
             >
               <div className="flex items-center gap-2 mb-4">
-                <div className={`w-1 h-4 rounded-full bg-gradient-to-b ${accent}`} />
-                <h3 className="text-sm font-semibold text-gray-800">
-                  {t.skills.categories[
-                    key as keyof typeof t.skills.categories
-                  ] || group.category}
+                <div className={`w-1 h-4 rounded-full ${accent}`} />
+                <h3 className="text-sm font-semibold text-neutral-800">
+                  {t.skills.categories[group.category.toLowerCase() as keyof typeof t.skills.categories] || group.category}
                 </h3>
               </div>
               <div className="flex flex-wrap gap-2">
                 {group.items.map((skill) => (
                   <span
                     key={skill}
-                    className={`px-2.5 py-1 text-xs rounded-lg border ${categoryColors[key] || "border-gray-200 bg-gray-50 text-gray-600"} transition-all duration-200 hover:scale-105`}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-400 hover:bg-white transition-all"
                   >
                     {skill}
                   </span>

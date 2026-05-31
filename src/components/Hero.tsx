@@ -5,19 +5,6 @@ import { useConfig } from "./ConfigProvider";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { useLang } from "./LangProvider";
 
-const techRadar = [
-  { label: "Network Security", x: 83.6, y: 50 },
-  { label: "AI/ML", x: 77.8, y: 14.4 },
-  { label: "IPv6", x: 43.3, y: 7.1 },
-  { label: "Python", x: 15.5, y: 30.5 },
-  { label: "Pen Testing", x: 15.5, y: 69.5 },
-  { label: "Traffic Analysis", x: 69.8, y: 35.3 },
-  { label: "RL", x: 30.7, y: 11.2 },
-  { label: "Dist. Systems", x: 22.8, y: 50 },
-  { label: "LLM", x: 30.7, y: 88.8 },
-  { label: "Privacy Comp.", x: 69.8, y: 64.7 },
-];
-
 export default function Hero() {
   const { t } = useLang();
   const config = useConfig();
@@ -25,122 +12,129 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="min-h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 pt-20"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-neutral-950 text-neutral-50"
     >
-      <div className="max-w-6xl mx-auto w-full grid lg:grid-cols-5 gap-12 items-center">
-        <div className="lg:col-span-3 space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-indigo-200 bg-indigo-50 text-xs text-indigo-600 mb-6 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
-              {config.subtitle}
-            </div>
-          </motion.div>
+      {/* Background dot grid */}
+      <div
+        className="absolute inset-0 opacity-[0.15]"
+        style={{
+          backgroundImage: "radial-gradient(circle, #525252 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
+      {/* Glow effects */}
+      <div
+        className="absolute top-1/4 right-1/4 w-[600px] h-[600px] rounded-full opacity-10"
+        style={{
+          background: "radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)",
+        }}
+      />
+      <div
+        className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] rounded-full opacity-10"
+        style={{
+          background: "radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)",
+        }}
+      />
 
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.8,
-              delay: 0.1,
-              ease: [0.25, 0.46, 0.45, 0.94],
-            }}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]"
-          >
-            {t.hero.greeting}{" "}
-            <span className="gradient-text-hero">{config.name}</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.8,
-              delay: 0.2,
-              ease: [0.25, 0.46, 0.45, 0.94],
-            }}
-            className="text-base md:text-lg text-gray-500 leading-relaxed max-w-xl"
-          >
-            {config.heroDescription}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.8,
-              delay: 0.3,
-              ease: [0.25, 0.46, 0.45, 0.94],
-            }}
-            className="flex flex-wrap gap-4"
-          >
-            <a
-              href="#projects"
-              className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-medium hover:from-indigo-700 hover:to-violet-700 transition-all duration-300 shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-300"
+      <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-12 lg:px-24 pt-20">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          {/* Left content */}
+          <div className="space-y-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
             >
-              {t.hero.viewProjects}
-              <ArrowRight
-                size={14}
-                className="group-hover:translate-x-0.5 transition-transform"
-              />
-            </a>
-            <a
-              href="#contact"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-600 hover:text-gray-900 hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-300 shadow-sm"
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-neutral-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                {config.subtitle}
+              </span>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] text-white"
             >
-              {t.hero.contactMe}
-            </a>
-          </motion.div>
-        </div>
+              {t.hero.greeting}{" "}
+              <span className="text-neutral-500">{config.name}</span>
+            </motion.h1>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.4 }}
-          className="lg:col-span-2 hidden lg:flex items-center justify-center"
-        >
-          <div className="relative w-80 h-80">
-            <div className="absolute inset-0 rounded-full border border-indigo-100" />
-            <div className="absolute inset-8 rounded-full border border-indigo-50" />
-            <div className="absolute inset-16 rounded-full border border-gray-100" />
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-lg text-neutral-400 leading-relaxed max-w-lg"
+            >
+              {config.heroDescription}
+            </motion.p>
 
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-100 to-violet-100 border-2 border-white shadow-lg flex items-center justify-center">
-                <img
-                  src={config.avatar}
-                  alt={config.name}
-                  className="w-14 h-14 rounded-full object-cover"
-                />
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-wrap gap-4"
+            >
+              <a
+                href="#projects"
+                className="group inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-neutral-900 text-sm font-medium hover:bg-neutral-200 transition-all duration-200"
+              >
+                {t.hero.viewProjects}
+                <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+              </a>
+              <a
+                href="#contact"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 text-sm font-medium text-neutral-300 hover:text-white hover:border-white/30 transition-all duration-200"
+              >
+                {t.hero.contactMe}
+              </a>
+            </motion.div>
+          </div>
+
+          {/* Right - Avatar card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="hidden lg:flex justify-center"
+          >
+            <div className="relative">
+              <div className="absolute inset-0 -m-8 border border-white/5 rounded-3xl" />
+              <div className="absolute inset-0 -m-16 border border-white/[0.02] rounded-3xl" />
+              <div className="relative w-72 h-72 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white/10">
+                  <img
+                    src={config.avatar}
+                    alt={config.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="text-center">
+                  <div className="text-white font-semibold">{config.name}</div>
+                  <div className="text-neutral-500 text-sm">{config.title}</div>
+                </div>
+                <div className="flex gap-2">
+                  <span className="px-2 py-0.5 text-[10px] rounded-full border border-white/10 text-neutral-400">
+                    Network Security
+                  </span>
+                  <span className="px-2 py-0.5 text-[10px] rounded-full border border-white/10 text-neutral-400">
+                    AI/ML
+                  </span>
+                </div>
               </div>
             </div>
-
-            {techRadar.map((item, i) => (
-              <motion.div
-                key={i}
-                className="absolute text-[10px] whitespace-nowrap"
-                style={{ left: `${item.x}%`, top: `${item.y}%` }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 + i * 0.05 }}
-              >
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-indigo-100 bg-white text-indigo-500 shadow-sm">
-                  {item.label}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
 
+      {/* Scroll indicator */}
       <motion.div
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
         animate={{ y: [0, 8, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
       >
-        <ChevronDown size={20} className="text-indigo-300" />
+        <ChevronDown size={20} className="text-neutral-600" />
       </motion.div>
     </section>
   );
