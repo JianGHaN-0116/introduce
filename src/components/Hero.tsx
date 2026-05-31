@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { siteConfig } from "@/data/siteConfig";
 import { ArrowRight, ChevronDown } from "lucide-react";
+import { useLang } from "./LangProvider";
 
 const techRadar = [
   { label: "Network Security", x: 83.6, y: 50 },
@@ -18,6 +19,8 @@ const techRadar = [
 ];
 
 export default function Hero() {
+  const { t } = useLang();
+
   return (
     <section
       id="home"
@@ -46,7 +49,7 @@ export default function Hero() {
             }}
             className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]"
           >
-            Hi, I&apos;m{" "}
+            {t.hero.greeting}{" "}
             <span className="gradient-text-hero">{siteConfig.name}</span>
           </motion.h1>
 
@@ -77,7 +80,7 @@ export default function Hero() {
               href="#projects"
               className="group inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-[#050510] text-sm font-medium hover:bg-white/90 transition-all duration-200"
             >
-              View Projects
+              {t.hero.viewProjects}
               <ArrowRight
                 size={14}
                 className="group-hover:translate-x-0.5 transition-transform"
@@ -87,7 +90,7 @@ export default function Hero() {
               href="#contact"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 text-sm font-medium text-white/70 hover:text-white hover:border-white/20 hover:bg-white/[0.03] transition-all duration-200"
             >
-              Contact Me
+              {t.hero.contactMe}
             </a>
           </motion.div>
         </div>
@@ -122,11 +125,11 @@ export default function Hero() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 + i * 0.05 }}
               >
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-white/5 bg-white/[0.02]">
-                    {item.label}
-                  </span>
-                </motion.div>
-              ))}
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-white/5 bg-white/[0.02]">
+                  {item.label}
+                </span>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
       </div>

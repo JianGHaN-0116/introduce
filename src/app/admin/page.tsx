@@ -12,7 +12,12 @@ import {
   Plus,
   Trash2,
   ArrowLeft,
+  Lock,
+  LogOut,
 } from "lucide-react";
+import { LangProvider, useLang } from "@/components/LangProvider";
+
+const ADMIN_TOKEN = "admin123";
 
 type SectionKey =
   | "basic"
@@ -23,23 +28,32 @@ type SectionKey =
   | "experience"
   | "skills";
 
-const sections: { key: SectionKey; label: string }[] = [
-  { key: "basic", label: "基本信息" },
-  { key: "about", label: "关于我" },
-  { key: "research", label: "研究方向" },
-  { key: "projects", label: "项目经历" },
-  { key: "publications", label: "论文成果" },
-  { key: "experience", label: "经历时间线" },
-  { key: "skills", label: "技术能力" },
-];
+function AdminContent() {
+  const { t } = useLang();
 
-export default function AdminPage() {
+  const sections: { key: SectionKey; label: string }[] = [
+    { key: "basic", label: t.admin.sections.basic },
+    { key: "about", label: t.admin.sections.about },
+    { key: "research", label: t.admin.sections.research },
+    { key: "projects", label: t.admin.sections.projects },
+    { key: "publications", label: t.admin.sections.publications },
+    { key: "experience", label: t.admin.sections.experience },
+    { key: "skills", label: t.admin.sections.skills },
+  ];
+
+  const [authenticated, setAuthenticated] = useState(false);
+  const [tokenInput, setTokenInput] = useState("");
+  const [tokenError, setTokenError] = useState(false);
   const [config, setConfig] = useState(JSON.parse(JSON.stringify(defaultConfig)));
   const [activeSection, setActiveSection] = useState<SectionKey>("basic");
   const [saved, setSaved] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
+    const storedAuth = sessionStorage.getItem("admin_auth");
+    if (storedAuth === "true") {
+      setAuthenticated(true);
+    }
     const stored = localStorage.getItem("siteConfig");
     if (stored) {
       try {
@@ -47,6 +61,22 @@ export default function AdminPage() {
       } catch {}
     }
   }, []);
+
+  const handleLogin = () => {
+    if (tokenInput === ADMIN_TOKEN) {
+      setAuthenticated(true);
+      setTokenError(false);
+      sessionStorage.setItem("admin_auth", "true");
+    } else {
+      setTokenError(true);
+    }
+  };
+
+  const handleLogout = () => {
+    setAuthenticated(false);
+    sessionStorage.removeItem("admin_auth");
+    setTokenInput("");
+  };
 
   const handleSave = () => {
     localStorage.setItem("siteConfig", JSON.stringify(config));
@@ -133,21 +163,75 @@ export default function AdminPage() {
     setConfig(newConfig);
   };
 
+  if (!authenticated) {
+    return (
+      <div className="min-h-screen bg-[#050510] flex items-center justify-center px-6">
+        <div className="w-full max-w-sm">
+          <div className="glass-card rounded-2xl p-8 text-center">
+            <div className="w-14 h-14 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center mx-auto mb-6">
+              <Lock size={22} className="text-cyan-400/60" />
+            </div>
+            <h1 className="text-lg font-bold text-white/80 mb-1">
+              {t.admin.login.title}
+            </h1>
+            <p className="text-xs text-white/25 mb-6">
+              {t.admin.login.hint}
+            </p>
+            <div className="space-y-3">
+              <input
+                type="password"
+                value={tokenInput}
+                onChange={(e) => {
+                  setTokenInput(e.target.value);
+                  setTokenError(false);
+                }}
+                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                placeholder={t.admin.login.placeholder}
+                className={`w-full bg-white/[0.03] border rounded-lg px-4 py-3 text-sm text-white/70 focus:outline-none transition-colors ${
+                  tokenError
+                    ? "border-red-500/30 focus:border-red-500/50"
+                    : "border-white/10 focus:border-cyan-500/30"
+                }`}
+              />
+              {tokenError && (
+                <p className="text-xs text-red-400/70">{t.admin.login.error}</p>
+              )}
+              <button
+                onClick={handleLogin}
+                className="w-full py-3 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-sm font-medium hover:bg-cyan-500/20 transition-all"
+              >
+                {t.admin.login.button}
+              </button>
+            </div>
+          </div>
+          <div className="mt-6 text-center">
+            <a
+              href="/"
+              className="text-xs text-white/20 hover:text-white/40 transition-colors"
+            >
+              ← {t.nav.home}
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const renderBasicSection = () => (
     <div className="space-y-4">
       {[
-        { key: "name", label: "姓名" },
-        { key: "title", label: "头衔" },
-        { key: "subtitle", label: "副标题" },
-        { key: "heroDescription", label: "个人简介" },
-        { key: "email", label: "邮箱" },
-        { key: "github", label: "GitHub 链接" },
-        { key: "githubUsername", label: "GitHub 用户名" },
+        { key: "name", label: "姓名 / Name" },
+        { key: "title", label: "头衔 / Title" },
+        { key: "subtitle", label: "副标题 / Subtitle" },
+        { key: "heroDescription", label: "个人简介 / Bio" },
+        { key: "email", label: "邮箱 / Email" },
+        { key: "github", label: "GitHub URL" },
+        { key: "githubUsername", label: "GitHub Username" },
         { key: "scholar", label: "Google Scholar" },
         { key: "linkedin", label: "LinkedIn" },
-        { key: "blog", label: "博客" },
-        { key: "slogan", label: "个人 Slogan" },
-        { key: "avatar", label: "头像 URL" },
+        { key: "blog", label: "博客 / Blog" },
+        { key: "slogan", label: "Slogan" },
+        { key: "avatar", label: "头像 URL / Avatar URL" },
       ].map(({ key, label }) => (
         <div key={key}>
           <label className="block text-xs text-white/30 mb-1">{label}</label>
@@ -174,7 +258,7 @@ export default function AdminPage() {
   const renderAboutSection = () => (
     <div className="space-y-4">
       <div>
-        <label className="block text-xs text-white/30 mb-1">背景介绍</label>
+        <label className="block text-xs text-white/30 mb-1">背景介绍 / Background</label>
         <textarea
           value={config.about.background}
           onChange={(e) => updateField("about.background", e.target.value)}
@@ -183,7 +267,7 @@ export default function AdminPage() {
         />
       </div>
       <div>
-        <label className="block text-xs text-white/30 mb-1">研究兴趣</label>
+        <label className="block text-xs text-white/30 mb-1">研究兴趣 / Interests</label>
         <textarea
           value={config.about.interests}
           onChange={(e) => updateField("about.interests", e.target.value)}
@@ -192,7 +276,7 @@ export default function AdminPage() {
         />
       </div>
       <div>
-        <label className="block text-xs text-white/30 mb-2">卡片列表</label>
+        <label className="block text-xs text-white/30 mb-2">卡片 / Cards</label>
         {config.about.cards.map((card: { title: string; description: string; icon: string }, i: number) => (
           <div key={i} className="mb-3 p-3 border border-white/5 rounded-lg">
             <div className="flex items-center justify-between mb-2">
@@ -221,7 +305,7 @@ export default function AdminPage() {
           onClick={() => addItem("about.cards", { title: "新卡片", description: "描述", icon: "flask" })}
           className="text-xs text-cyan-400/50 hover:text-cyan-400 flex items-center gap-1"
         >
-          <Plus size={12} /> 添加卡片
+          <Plus size={12} /> {t.admin.add}
         </button>
       </div>
     </div>
@@ -264,7 +348,7 @@ export default function AdminPage() {
         onClick={() => addItem(path, templates)}
         className="text-xs text-cyan-400/50 hover:text-cyan-400 flex items-center gap-1 mt-2"
       >
-        <Plus size={12} /> 添加项目
+        <Plus size={12} /> {t.admin.add}
       </button>
     </div>
   );
@@ -365,25 +449,28 @@ export default function AdminPage() {
               <ArrowLeft size={18} />
             </a>
             <div>
-              <h1 className="text-xl font-bold text-white/80">内容管理</h1>
-              <p className="text-xs text-white/25">编辑网站内容，保存后实时生效</p>
+              <h1 className="text-xl font-bold text-white/80">{t.admin.title}</h1>
+              <p className="text-xs text-white/25">{t.admin.subtitle}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={handleImport} className="p-2 rounded-lg border border-white/10 hover:border-white/20 text-white/40 hover:text-white/60 transition-all" title="导入">
+            <button onClick={handleImport} className="p-2 rounded-lg border border-white/10 hover:border-white/20 text-white/40 hover:text-white/60 transition-all" title={t.admin.import}>
               <Upload size={14} />
             </button>
-            <button onClick={handleExport} className="p-2 rounded-lg border border-white/10 hover:border-white/20 text-white/40 hover:text-white/60 transition-all" title="导出">
+            <button onClick={handleExport} className="p-2 rounded-lg border border-white/10 hover:border-white/20 text-white/40 hover:text-white/60 transition-all" title={t.admin.export}>
               <Download size={14} />
             </button>
-            <button onClick={handleReset} className="p-2 rounded-lg border border-white/10 hover:border-red-500/20 text-white/40 hover:text-red-400/60 transition-all" title="重置">
+            <button onClick={handleReset} className="p-2 rounded-lg border border-white/10 hover:border-red-500/20 text-white/40 hover:text-red-400/60 transition-all" title={t.admin.reset}>
               <RotateCcw size={14} />
             </button>
             <button onClick={handleSave} className={`px-4 py-2 rounded-lg text-xs font-medium transition-all ${saved ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/20" : "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20"}`}>
               <span className="flex items-center gap-1.5">
                 <Save size={12} />
-                {saved ? "已保存" : "保存"}
+                {saved ? t.admin.saved : t.admin.save}
               </span>
+            </button>
+            <button onClick={handleLogout} className="p-2 rounded-lg border border-white/10 hover:border-red-500/20 text-white/40 hover:text-red-400/60 transition-all" title="Logout">
+              <LogOut size={14} />
             </button>
           </div>
         </div>
@@ -418,5 +505,13 @@ export default function AdminPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <LangProvider>
+      <AdminContent />
+    </LangProvider>
   );
 }

@@ -2,12 +2,24 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Globe } from "lucide-react";
 import { siteConfig } from "@/data/siteConfig";
+import { useLang } from "./LangProvider";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { lang, t, toggleLang } = useLang();
+
+  const navItems = [
+    { label: t.nav.home, href: "#home" },
+    { label: t.nav.about, href: "#about" },
+    { label: t.nav.research, href: "#research" },
+    { label: t.nav.projects, href: "#projects" },
+    { label: t.nav.publications, href: "#publications" },
+    { label: t.nav.experience, href: "#experience" },
+    { label: t.nav.contact, href: "#contact" },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -35,7 +47,7 @@ export default function Navbar() {
         </a>
 
         <div className="hidden md:flex items-center gap-8">
-          {siteConfig.nav.map((item) => (
+          {navItems.map((item) => (
             <a
               key={item.href}
               href={item.href}
@@ -45,14 +57,31 @@ export default function Navbar() {
               <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gradient-to-r from-cyan-400 to-violet-400 group-hover:w-full transition-all duration-300" />
             </a>
           ))}
+          <button
+            onClick={toggleLang}
+            className="flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors duration-200"
+            title={lang === "en" ? "切换中文" : "Switch to English"}
+          >
+            <Globe size={14} />
+            <span className="text-xs font-medium uppercase">{lang}</span>
+          </button>
         </div>
 
-        <button
-          className="md:hidden text-white/70 hover:text-white"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
-          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        <div className="md:hidden flex items-center gap-3">
+          <button
+            onClick={toggleLang}
+            className="flex items-center gap-1 text-white/40 hover:text-white/70 transition-colors"
+          >
+            <Globe size={14} />
+            <span className="text-xs uppercase">{lang}</span>
+          </button>
+          <button
+            className="text-white/70 hover:text-white"
+            onClick={() => setMobileOpen(!mobileOpen)}
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -64,7 +93,7 @@ export default function Navbar() {
             className="md:hidden bg-[#050510]/95 backdrop-blur-xl border-b border-white/5"
           >
             <div className="px-6 py-4 flex flex-col gap-4">
-              {siteConfig.nav.map((item) => (
+              {navItems.map((item) => (
                 <a
                   key={item.href}
                   href={item.href}

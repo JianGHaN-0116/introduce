@@ -9,10 +9,11 @@ import Skills from "@/components/Skills";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import BackgroundEffects from "@/components/BackgroundEffects";
+import { LangProvider } from "@/components/LangProvider";
 
 export default function Home() {
   return (
-    <>
+    <LangProvider>
       <BackgroundEffects />
       <Navbar />
       <main className="relative">
@@ -26,6 +27,6 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
-    </>
+    </LangProvider>
   );
 }
