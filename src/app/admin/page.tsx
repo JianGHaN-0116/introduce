@@ -21,8 +21,6 @@ import {
 } from "lucide-react";
 import { LangProvider, useLang } from "@/components/LangProvider";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-
 type SectionKey =
   | "basic"
   | "about"
@@ -59,7 +57,7 @@ function AdminContent() {
   useEffect(() => {
     const token = sessionStorage.getItem("admin_token");
     if (token) {
-      fetch(`${API_URL}/api/verify`, {
+      fetch("/api/verify", {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => {
@@ -83,7 +81,7 @@ function AdminContent() {
     setLoginLoading(true);
     setLoginError("");
     try {
-      const res = await fetch(`${API_URL}/api/login`, {
+      const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
