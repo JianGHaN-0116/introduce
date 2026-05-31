@@ -81,7 +81,7 @@ const zh = {
       placeholder: "请输入访问令牌",
       button: "进入管理",
       error: "令牌无效，请重试",
-      hint: "默认令牌：admin123",
+      hint: "请输入管理员令牌",
     },
   },
 } as const;

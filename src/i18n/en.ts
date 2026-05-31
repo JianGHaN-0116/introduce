@@ -83,7 +83,7 @@ const en = {
       placeholder: "Enter access token",
       button: "Enter Admin",
       error: "Invalid token, please try again",
-      hint: "Default token: admin123",
+      hint: "Enter the admin access token",
     },
   },
 } as const;

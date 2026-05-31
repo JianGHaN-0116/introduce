@@ -17,7 +17,16 @@ import {
 } from "lucide-react";
 import { LangProvider, useLang } from "@/components/LangProvider";
 
-const ADMIN_TOKEN = "admin123";
+const ADMIN_TOKEN_HASH =
+  process.env.NEXT_PUBLIC_ADMIN_TOKEN_HASH ||
+  "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9";
+
+async function sha256(message: string): Promise<string> {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
 
 type SectionKey =
   | "basic"
@@ -62,8 +71,9 @@ function AdminContent() {
     }
   }, []);
 
-  const handleLogin = () => {
-    if (tokenInput === ADMIN_TOKEN) {
+  const handleLogin = async () => {
+    const hash = await sha256(tokenInput);
+    if (hash === ADMIN_TOKEN_HASH) {
       setAuthenticated(true);
       setTokenError(false);
       sessionStorage.setItem("admin_auth", "true");
