@@ -1,103 +1,47 @@
+import { neon } from "@neondatabase/serverless";
 import { siteConfig } from "@/data/siteConfig";
 
-const CONFIG_PATH = "src/data/siteConfig.json";
-
-function getRepoInfo() {
-  const repo = process.env.GITHUB_REPO || "JianGHaN-0116/introduce";
-  const [owner, name] = repo.split("/");
-  return { owner, name, repo };
-}
-
-function getGitHubToken() {
-  return process.env.GITHUB_TOKEN || "";
+function getSql() {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    throw new Error("DATABASE_URL environment variable is not set");
+  }
+  return neon(databaseUrl);
 }
 
 export async function getConfig() {
   try {
-    const { owner, name } = getRepoInfo();
-    const token = getGitHubToken();
-    
-    if (!token) {
+    const sql = getSql();
+    const rows = await sql`SELECT data FROM site_config WHERE id = 1`;
+    if (rows.length > 0 && rows[0].data) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      return { ...siteConfig, ...data };
+    }
+  } catch (e: any) {
+    if (e.message?.includes("relation \"site_config\" does not exist")) {
       return siteConfig;
     }
-
-    const res = await fetch(
-      `https://api.github.com/repos/${owner}/${name}/contents/${CONFIG_PATH}?ref=main`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/vnd.github.v3+json",
-        },
-        cache: "no-store",
-      }
-    );
-
-    if (!res.ok) {
-      return siteConfig;
-    }
-
-    const data = await res.json();
-    const content = Buffer.from(data.content, "base64").toString("utf-8");
-    const parsed = JSON.parse(content);
-    return { ...siteConfig, ...parsed };
-  } catch {
-    return siteConfig;
+    console.error("[getConfig]", e);
   }
+  return siteConfig;
 }
 
 export async function saveConfig(config: Record<string, unknown>) {
-  const { owner, name } = getRepoInfo();
-  const token = getGitHubToken();
+  const sql = getSql();
+  const json = JSON.stringify(config);
 
-  if (!token) {
-    throw new Error("GITHUB_TOKEN environment variable is not set");
-  }
+  await sql`
+    CREATE TABLE IF NOT EXISTS site_config (
+      id INTEGER PRIMARY KEY,
+      data JSONB NOT NULL,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
 
-  // Get current file to obtain sha
-  const getRes = await fetch(
-    `https://api.github.com/repos/${owner}/${name}/contents/${CONFIG_PATH}?ref=main`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github.v3+json",
-      },
-    }
-  );
-
-  if (!getRes.ok) {
-    const err = await getRes.text();
-    throw new Error(`Failed to get file: ${err}`);
-  }
-
-  const fileData = await getRes.json();
-  const sha = fileData.sha;
-
-  // Update file
-  const content = JSON.stringify(config, null, 2);
-  const encodedContent = Buffer.from(content).toString("base64");
-
-  const putRes = await fetch(
-    `https://api.github.com/repos/${owner}/${name}/contents/${CONFIG_PATH}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github.v3+json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message: "Update site config via admin panel",
-        content: encodedContent,
-        sha,
-        branch: "main",
-      }),
-    }
-  );
-
-  if (!putRes.ok) {
-    const err = await putRes.text();
-    throw new Error(`Failed to save config: ${err}`);
-  }
-
-  return await putRes.json();
+  await sql`
+    INSERT INTO site_config (id, data, updated_at)
+    VALUES (1, ${json}, CURRENT_TIMESTAMP)
+    ON CONFLICT (id)
+    DO UPDATE SET data = EXCLUDED.data, updated_at = CURRENT_TIMESTAMP
+  `;
 }
