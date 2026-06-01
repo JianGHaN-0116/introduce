@@ -39,6 +39,10 @@ export async function initDb() {
   `;
 
   await sql`
+    ALTER TABLE site_profile ADD COLUMN IF NOT EXISTS patents JSONB DEFAULT '[]'
+  `;
+
+  await sql`
     INSERT INTO site_profile (id) VALUES (1)
     ON CONFLICT (id) DO NOTHING
   `;
