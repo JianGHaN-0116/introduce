@@ -36,8 +36,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
       const token = authHeader.slice(7);
-      const tokenHash = await sha256(token);
-      if (tokenHash !== ADMIN_USERNAME_HASH + ADMIN_PASSWORD_HASH) {
+      if (token !== ADMIN_USERNAME_HASH + ADMIN_PASSWORD_HASH) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
     }
