@@ -1,0 +1,162 @@
+{
+  "name": "JianGHaN",
+  "title": "Network Security Researcher & AI Engineer",
+  "subtitle": "Graduate Student @ UJN ISE MLNBA",
+  "heroDescription": "Exploring the frontiers of cyberspace security through rigorous research and innovative engineering. Focused on encrypted traffic analysis, IPv6 measurement, and AI-driven security solutions.",
+  "email": "jianghan@example.com",
+  "github": "https://github.com/JianGHaN-0116",
+  "githubUsername": "JianGHaN-0116",
+  "slogan": "Securing the digital world, one packet at a time.",
+  "avatar": "https://avatars.githubusercontent.com/u/240411628?v=4",
+  "about": {
+    "background": "I am a graduate student at the School of Information Science and Engineering, University of Jinan, affiliated with the MLNBA Lab. My research focuses on cyberspace security, particularly in encrypted traffic analysis and IPv6 network measurement.",
+    "interests": "I am passionate about building intelligent security systems that combine deep network understanding with modern AI techniques. My long-term goal is to bridge the gap between academic research and practical security engineering.",
+    "cards": [
+      {
+        "title": "Research Focus",
+        "description": "Encrypted traffic analysis, IPv6 measurement, network security monitoring, and privacy-preserving computation.",
+        "icon": "flask"
+      },
+      {
+        "title": "Engineering Practice",
+        "description": "Building production-grade security tools, scanning systems, and AI-powered analysis platforms.",
+        "icon": "terminal"
+      },
+      {
+        "title": "Academic Vision",
+        "description": "Advancing the state-of-the-art in AI for Security and contributing to the open-source community.",
+        "icon": "graduation-cap"
+      }
+    ]
+  },
+  "research": [
+    {
+      "title": "Network Security",
+      "description": "Vulnerability detection, intrusion detection systems, and security architecture design for enterprise networks.",
+      "tags": ["IDS/IPS", "Firewall", "Zero Trust"]
+    },
+    {
+      "title": "Encrypted Traffic Analysis",
+      "description": "Identifying and classifying encrypted network traffic using machine learning and deep learning approaches.",
+      "tags": ["ML", "Deep Learning", "TLS"]
+    },
+    {
+      "title": "IPv6 Measurement",
+      "description": "Large-scale IPv6 address scanning, topology discovery, and network reachability analysis.",
+      "tags": ["IPv6", "Scanning", "Topology"]
+    },
+    {
+      "title": "AI for Security",
+      "description": "Applying artificial intelligence techniques to automate threat detection, response, and security analytics.",
+      "tags": ["LLM", "Agent", "Automation"]
+    },
+    {
+      "title": "Privacy-Preserving Computation",
+      "description": "Federated learning, differential privacy, and secure multi-party computation for privacy-aware systems.",
+      "tags": ["FL", "DP", "SMPC"]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Gravity-Agent-Scanner",
+      "description": "Distributed network scanning system with IPv6 intelligence agent for large-scale address discovery and analysis.",
+      "techStack": ["Python", "IPv6", "AsyncIO", "Redis"],
+      "highlights": "Distributed architecture, intelligent target generation",
+      "github": "https://github.com/JianGHaN-0116/Gravity-Agent-Scanner",
+      "demo": ""
+    },
+    {
+      "name": "RedAgent",
+      "description": "AI-powered red team automation framework for penetration testing and vulnerability assessment.",
+      "techStack": ["Python", "LLM", "ReAct", "Security"],
+      "highlights": "LLM-driven attack chain generation",
+      "github": "https://github.com/JianGHaN-0116/RedAgent",
+      "demo": ""
+    },
+    {
+      "name": "Introduce",
+      "description": "Personal academic website and portfolio, built with Next.js and modern web technologies.",
+      "techStack": ["Next.js", "React", "Tailwind CSS", "Framer Motion"],
+      "highlights": "Modern design, responsive, animated",
+      "github": "https://github.com/JianGHaN-0116/Introduce",
+      "demo": "https://jianghan-0116.github.io/Introduce/"
+    }
+  ],
+  "publications": [
+    {
+      "title": "Encrypted Traffic Classification Based on Multi-Scale Spatial-Temporal Features",
+      "venue": "IEEE INFOCOM (Under Review)",
+      "status": "review",
+      "contribution": "Proposed a novel multi-scale feature extraction framework achieving state-of-the-art accuracy on ISCX-VPN dataset."
+    },
+    {
+      "title": "Large-Scale IPv6 Address Scanning via Reinforcement Learning",
+      "venue": "ACM IMC (Under Review)",
+      "status": "review",
+      "contribution": "Designed an RL-based target generation strategy that improves scanning efficiency by 3x over existing methods."
+    },
+    {
+      "title": "A Survey on AI-Driven Network Security: From Detection to Response",
+      "venue": "arXiv Preprint",
+      "status": "preprint",
+      "contribution": "Comprehensive survey covering 200+ papers on AI applications in network security with taxonomy and future directions."
+    }
+  ],
+  "experience": [
+    {
+      "year": "2024 - Present",
+      "title": "Graduate Researcher",
+      "organization": "UJN ISE · MLNBA Lab",
+      "description": "Conducting research on encrypted traffic analysis and IPv6 network measurement. Leading the development of Gravity-Agent-Scanner."
+    },
+    {
+      "year": "2023 - 2024",
+      "title": "Undergraduate Research Assistant",
+      "organization": "UJN ISE · Network Security Group",
+      "description": "Participated in network security research projects. Built automated vulnerability scanning tools."
+    },
+    {
+      "year": "2023",
+      "title": "Security Intern",
+      "organization": "Cybersecurity Company",
+      "description": "Conducted penetration testing and security assessment for enterprise clients. Developed internal security automation tools."
+    },
+    {
+      "year": "2022",
+      "title": "Competition Award",
+      "organization": "National Cybersecurity Competition",
+      "description": "Won provincial first prize in CTF and network security competition. Demonstrated expertise in web security and cryptography."
+    }
+  ],
+  "skills": [
+    {
+      "category": "Programming",
+      "items": ["Python", "TypeScript", "Go", "C/C++", "Shell", "SQL"]
+    },
+    {
+      "category": "Security",
+      "items": ["Penetration Testing", "Traffic Analysis", "Nmap", "Wireshark", "Burp Suite", "Metasploit"]
+    },
+    {
+      "category": "Machine Learning",
+      "items": ["PyTorch", "TensorFlow", "Scikit-learn", "LLM Fine-tuning", "Reinforcement Learning"]
+    },
+    {
+      "category": "Systems",
+      "items": ["Linux", "Docker", "Kubernetes", "Nginx", "Redis", "PostgreSQL"]
+    },
+    {
+      "category": "Tools",
+      "items": ["Git", "VS Code", "LaTeX", "Figma", "Vim", "Tmux"]
+    }
+  ],
+  "nav": [
+    { "label": "Home", "href": "#home" },
+    { "label": "About", "href": "#about" },
+    { "label": "Research", "href": "#research" },
+    { "label": "Projects", "href": "#projects" },
+    { "label": "Publications", "href": "#publications" },
+    { "label": "Experience", "href": "#experience" },
+    { "label": "Contact", "href": "#contact" }
+  ]
+}

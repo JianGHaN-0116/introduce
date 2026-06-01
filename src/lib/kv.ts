@@ -1,58 +1,103 @@
 import { siteConfig } from "@/data/siteConfig";
 
-const KV_KEY = "site_config";
+const CONFIG_PATH = "src/data/siteConfig.json";
 
-async function getEdgeConfig() {
-  try {
-    const edgeConfig = await import("@vercel/edge-config");
-    return edgeConfig;
-  } catch {
-    return null;
-  }
+function getRepoInfo() {
+  const repo = process.env.GITHUB_REPO || "JianGHaN-0116/introduce";
+  const [owner, name] = repo.split("/");
+  return { owner, name, repo };
+}
+
+function getGitHubToken() {
+  return process.env.GITHUB_TOKEN || "";
 }
 
 export async function getConfig() {
-  const ec = await getEdgeConfig();
-  if (!ec) return siteConfig;
   try {
-    const stored = await ec.get(KV_KEY);
-    if (stored && typeof stored === "object") {
-      return { ...siteConfig, ...(stored as Record<string, unknown>) };
+    const { owner, name } = getRepoInfo();
+    const token = getGitHubToken();
+    
+    if (!token) {
+      return siteConfig;
     }
-  } catch {}
-  return siteConfig;
+
+    const res = await fetch(
+      `https://api.github.com/repos/${owner}/${name}/contents/${CONFIG_PATH}?ref=main`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!res.ok) {
+      return siteConfig;
+    }
+
+    const data = await res.json();
+    const content = Buffer.from(data.content, "base64").toString("utf-8");
+    const parsed = JSON.parse(content);
+    return { ...siteConfig, ...parsed };
+  } catch {
+    return siteConfig;
+  }
 }
 
 export async function saveConfig(config: Record<string, unknown>) {
-  const edgeConfigId = process.env.EDGE_CONFIG_ID;
-  const vercelToken = process.env.VERCEL_API_TOKEN;
+  const { owner, name } = getRepoInfo();
+  const token = getGitHubToken();
 
-  if (!edgeConfigId || !vercelToken) {
-    throw new Error("EDGE_CONFIG_ID and VERCEL_API_TOKEN environment variables are required");
+  if (!token) {
+    throw new Error("GITHUB_TOKEN environment variable is not set");
   }
 
-  const res = await fetch(
-    `https://api.vercel.com/v1/edge-config/${edgeConfigId}/items`,
+  // Get current file to obtain sha
+  const getRes = await fetch(
+    `https://api.github.com/repos/${owner}/${name}/contents/${CONFIG_PATH}?ref=main`,
     {
-      method: "PATCH",
       headers: {
-        Authorization: `Bearer ${vercelToken}`,
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    }
+  );
+
+  if (!getRes.ok) {
+    const err = await getRes.text();
+    throw new Error(`Failed to get file: ${err}`);
+  }
+
+  const fileData = await getRes.json();
+  const sha = fileData.sha;
+
+  // Update file
+  const content = JSON.stringify(config, null, 2);
+  const encodedContent = Buffer.from(content).toString("base64");
+
+  const putRes = await fetch(
+    `https://api.github.com/repos/${owner}/${name}/contents/${CONFIG_PATH}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github.v3+json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        items: [
-          {
-            operation: "upsert",
-            key: KV_KEY,
-            value: config,
-          },
-        ],
+        message: "Update site config via admin panel",
+        content: encodedContent,
+        sha,
+        branch: "main",
       }),
     }
   );
 
-  if (!res.ok) {
-    const err = await res.text();
+  if (!putRes.ok) {
+    const err = await putRes.text();
     throw new Error(`Failed to save config: ${err}`);
   }
+
+  return await putRes.json();
 }
