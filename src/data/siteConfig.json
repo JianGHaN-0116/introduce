@@ -156,7 +156,7 @@
     { "label": "About", "href": "#about" },
     { "label": "Research", "href": "#research" },
     { "label": "Projects", "href": "#projects" },
-    { "label": "Publications", "href": "#publications" },
+    { "label": "Academic", "href": "#publications" },
     { "label": "Experience", "href": "#experience" },
     { "label": "Contact", "href": "#contact" }
   ]

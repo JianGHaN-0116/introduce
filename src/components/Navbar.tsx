@@ -17,7 +17,7 @@ export default function Navbar() {
     { label: t.nav.about, href: "#about" },
     { label: t.nav.research, href: "#research" },
     { label: t.nav.projects, href: "#projects" },
-    { label: t.nav.publications, href: "#publications" },
+    { label: t.nav.academic, href: "#publications" },
     { label: t.nav.experience, href: "#experience" },
     { label: t.nav.contact, href: "#contact" },
   ];

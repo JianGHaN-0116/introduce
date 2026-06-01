@@ -27,8 +27,7 @@ type SectionKey =
   | "about"
   | "research"
   | "projects"
-  | "publications"
-  | "patents"
+  | "academic"
   | "experience"
   | "skills";
 
@@ -40,8 +39,7 @@ function AdminContent() {
     { key: "about", label: t.admin.sections.about },
     { key: "research", label: t.admin.sections.research },
     { key: "projects", label: t.admin.sections.projects },
-    { key: "publications", label: t.admin.sections.publications },
-    { key: "patents", label: t.admin.sections.patents },
+    { key: "academic", label: t.admin.sections.academic },
     { key: "experience", label: t.admin.sections.experience },
     { key: "skills", label: t.admin.sections.skills },
   ];
@@ -466,43 +464,56 @@ function AdminContent() {
       </div>
     ));
 
-  const renderPublicationsSection = () =>
-    renderArraySection("publications", config.publications, {
-      title: "新论文",
-      venue: "会议/期刊",
-      status: "preprint",
-      contribution: "贡献说明",
-    }, (item, i) => (
-      <div className="space-y-2">
-        <input type="text" value={String(item.title)} onChange={(e) => updateField(`publications.${i}.title`, e.target.value)} placeholder="论文标题" className={smallInputCls} />
-        <input type="text" value={String(item.venue)} onChange={(e) => updateField(`publications.${i}.venue`, e.target.value)} placeholder="期刊/会议" className={smallInputCls} />
-        <select value={String(item.status)} onChange={(e) => updateField(`publications.${i}.status`, e.target.value)} className={smallInputCls}>
-          <option value="published">Published</option>
-          <option value="review">Under Review</option>
-          <option value="preprint">Preprint</option>
-        </select>
-        <textarea value={String(item.contribution)} onChange={(e) => updateField(`publications.${i}.contribution`, e.target.value)} placeholder="贡献说明" rows={2} className={smallTextareaCls} />
+  const renderAcademicSection = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-sm font-semibold text-zinc-500 mb-3 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+          论文
+        </h3>
+        {renderArraySection("publications", config.publications, {
+          title: "新论文",
+          venue: "会议/期刊",
+          status: "preprint",
+          contribution: "贡献说明",
+        }, (item, i) => (
+          <div className="space-y-2">
+            <input type="text" value={String(item.title)} onChange={(e) => updateField(`publications.${i}.title`, e.target.value)} placeholder="论文标题" className={smallInputCls} />
+            <input type="text" value={String(item.venue)} onChange={(e) => updateField(`publications.${i}.venue`, e.target.value)} placeholder="期刊/会议" className={smallInputCls} />
+            <select value={String(item.status)} onChange={(e) => updateField(`publications.${i}.status`, e.target.value)} className={smallInputCls}>
+              <option value="published">Published</option>
+              <option value="review">Under Review</option>
+              <option value="preprint">Preprint</option>
+            </select>
+            <textarea value={String(item.contribution)} onChange={(e) => updateField(`publications.${i}.contribution`, e.target.value)} placeholder="贡献说明" rows={2} className={smallTextareaCls} />
+          </div>
+        ))}
       </div>
-    ));
-
-  const renderPatentsSection = () =>
-    renderArraySection("patents", config.patents, {
-      title: "新专利",
-      number: "专利号",
-      status: "pending",
-      description: "描述",
-    }, (item, i) => (
-      <div className="space-y-2">
-        <input type="text" value={String(item.title)} onChange={(e) => updateField(`patents.${i}.title`, e.target.value)} placeholder="专利名称" className={smallInputCls} />
-        <input type="text" value={String(item.number || "")} onChange={(e) => updateField(`patents.${i}.number`, e.target.value)} placeholder="专利号" className={smallInputCls} />
-        <select value={String(item.status)} onChange={(e) => updateField(`patents.${i}.status`, e.target.value)} className={smallInputCls}>
-          <option value="granted">Granted / 已授权</option>
-          <option value="applied">Applied / 申请中</option>
-          <option value="pending">Pending / 审查中</option>
-        </select>
-        <textarea value={String(item.description || "")} onChange={(e) => updateField(`patents.${i}.description`, e.target.value)} placeholder="描述" rows={2} className={smallTextareaCls} />
+      <div>
+        <h3 className="text-sm font-semibold text-zinc-500 mb-3 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+          专利
+        </h3>
+        {renderArraySection("patents", config.patents, {
+          title: "新专利",
+          number: "专利号",
+          status: "pending",
+          description: "描述",
+        }, (item, i) => (
+          <div className="space-y-2">
+            <input type="text" value={String(item.title)} onChange={(e) => updateField(`patents.${i}.title`, e.target.value)} placeholder="专利名称" className={smallInputCls} />
+            <input type="text" value={String(item.number || "")} onChange={(e) => updateField(`patents.${i}.number`, e.target.value)} placeholder="专利号" className={smallInputCls} />
+            <select value={String(item.status)} onChange={(e) => updateField(`patents.${i}.status`, e.target.value)} className={smallInputCls}>
+              <option value="granted">Granted / 已授权</option>
+              <option value="applied">Applied / 申请中</option>
+              <option value="pending">Pending / 审查中</option>
+            </select>
+            <textarea value={String(item.description || "")} onChange={(e) => updateField(`patents.${i}.description`, e.target.value)} placeholder="描述" rows={2} className={smallTextareaCls} />
+          </div>
+        ))}
       </div>
-    ));
+    </div>
+  );
 
   const renderExperienceSection = () =>
     renderArraySection("experience", config.experience, {
@@ -535,8 +546,7 @@ function AdminContent() {
     about: renderAboutSection,
     research: renderResearchSection,
     projects: renderProjectsSection,
-    publications: renderPublicationsSection,
-    patents: renderPatentsSection,
+    academic: renderAcademicSection,
     experience: renderExperienceSection,
     skills: renderSkillsSection,
   };
