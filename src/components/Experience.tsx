@@ -9,6 +9,8 @@ export default function Experience() {
   const { t } = useLang();
   const config = useConfig();
 
+  if (!config || !config.experience?.length) return null;
+
   return (
     <SectionWrapper id="experience">
       <div className="space-y-4 mb-12">

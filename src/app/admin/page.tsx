@@ -70,11 +70,15 @@ function AdminContent() {
       fetch("/api/config")
         .then((res) => res.json())
         .then((data) => {
-          if (data && typeof data === "object") {
+          if (data && typeof data === "object" && data.name) {
             setConfig({ ...JSON.parse(JSON.stringify(defaultConfig)), ...data });
+          } else {
+            setConfig({ ...JSON.parse(JSON.stringify(defaultConfig)), name: "", email: "", github: "" });
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          setConfig({ ...JSON.parse(JSON.stringify(defaultConfig)), name: "", email: "", github: "" });
+        });
     }
   }, [authenticated]);
 

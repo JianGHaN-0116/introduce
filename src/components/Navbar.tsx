@@ -46,7 +46,7 @@ export default function Navbar() {
             scrolled ? "text-neutral-900" : "text-white"
           }`}
         >
-          {config.name}
+          {config?.name || "My Site"}
         </a>
 
         <div className="hidden md:flex items-center gap-8">

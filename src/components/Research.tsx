@@ -9,6 +9,8 @@ export default function Research() {
   const { t } = useLang();
   const config = useConfig();
 
+  if (!config || !config.research?.length) return null;
+
   return (
     <SectionWrapper id="research" className="bg-neutral-100/50">
       <div className="space-y-4 mb-12">

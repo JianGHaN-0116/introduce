@@ -10,6 +10,8 @@ export default function Projects() {
   const { t } = useLang();
   const config = useConfig();
 
+  if (!config || !config.projects?.length) return null;
+
   return (
     <SectionWrapper id="projects">
       <div className="space-y-4 mb-12">

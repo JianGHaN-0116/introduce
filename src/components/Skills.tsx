@@ -17,6 +17,8 @@ export default function Skills() {
   const { t } = useLang();
   const config = useConfig();
 
+  if (!config || !config.skills?.length) return null;
+
   return (
     <SectionWrapper id="skills" className="bg-neutral-100/50">
       <div className="space-y-4 mb-12">

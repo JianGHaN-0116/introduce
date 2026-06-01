@@ -15,6 +15,8 @@ export default function Contact() {
   const { t } = useLang();
   const config = useConfig();
 
+  if (!config || !config.email) return null;
+
   return (
     <SectionWrapper id="contact" variant="dark">
       <div className="space-y-4 mb-12">

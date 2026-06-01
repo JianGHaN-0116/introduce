@@ -15,6 +15,8 @@ export default function Publications() {
   const { t } = useLang();
   const config = useConfig();
 
+  if (!config || !config.publications?.length) return null;
+
   return (
     <SectionWrapper id="publications" className="bg-neutral-100/50">
       <div className="space-y-4 mb-12">

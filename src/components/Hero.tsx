@@ -2,19 +2,65 @@
 
 import { motion } from "framer-motion";
 import { useConfig } from "./ConfigProvider";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown, Settings } from "lucide-react";
 import { useLang } from "./LangProvider";
 
 export default function Hero() {
   const { t } = useLang();
   const config = useConfig();
 
+  if (!config || !config.name) {
+    return (
+      <section
+        id="home"
+        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-neutral-950 text-neutral-50"
+      >
+        <div
+          className="absolute inset-0 opacity-[0.15]"
+          style={{
+            backgroundImage: "radial-gradient(circle, #525252 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
+        <div className="relative z-10 max-w-2xl mx-auto px-6 text-center space-y-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
+              <Settings size={28} className="text-neutral-400" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">
+              欢迎使用个人主页
+            </h1>
+            <p className="text-lg text-neutral-400 leading-relaxed">
+              您还没有配置个人信息，请前往管理员后台填写您的资料。
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <a
+              href="/admin"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-neutral-900 text-sm font-medium hover:bg-neutral-200 transition-all duration-200"
+            >
+              前往管理员后台
+              <ArrowRight size={16} />
+            </a>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section
       id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-neutral-950 text-neutral-50"
     >
-      {/* Background dot grid */}
       <div
         className="absolute inset-0 opacity-[0.15]"
         style={{
@@ -22,7 +68,6 @@ export default function Hero() {
           backgroundSize: "24px 24px",
         }}
       />
-      {/* Glow effects */}
       <div
         className="absolute top-1/4 right-1/4 w-[600px] h-[600px] rounded-full opacity-10"
         style={{
@@ -38,7 +83,6 @@ export default function Hero() {
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-12 lg:px-24 pt-20">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left content */}
           <div className="space-y-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -92,7 +136,6 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* Right - Avatar card */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -128,7 +171,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <motion.div
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
         animate={{ y: [0, 8, 0] }}

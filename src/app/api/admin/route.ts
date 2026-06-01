@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { saveConfig } from "@/lib/kv";
+import { saveConfig } from "@/lib/db";
 
 const ADMIN_USERNAME_HASH =
   "c46886b0b472784a6c50bb94f5f5aa091b41b65c7ec2eb5461f44e60796f4479";

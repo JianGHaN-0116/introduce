@@ -16,6 +16,8 @@ export default function About() {
   const { t } = useLang();
   const config = useConfig();
 
+  if (!config || !config.about?.background) return null;
+
   return (
     <SectionWrapper id="about">
       <div className="grid lg:grid-cols-2 gap-16 items-start">
