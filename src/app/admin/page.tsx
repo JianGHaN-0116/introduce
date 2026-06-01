@@ -125,11 +125,13 @@ function AdminContent() {
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
       } else {
-        alert("保存失败，请重新登录");
-        handleLogout();
+        const data = await res.json().catch(() => ({}));
+        const msg = data.error || `HTTP ${res.status}`;
+        alert(`保存失败: ${msg}`);
+        if (res.status === 401) handleLogout();
       }
-    } catch {
-      alert("保存失败，请检查网络连接");
+    } catch (err: any) {
+      alert(`保存失败: ${err.message || "网络错误"}`);
     } finally {
       setSaving(false);
     }

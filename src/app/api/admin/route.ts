@@ -52,6 +52,10 @@ export async function POST(request: NextRequest) {
     await saveConfig(config);
     return NextResponse.json({ success: true });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    console.error("[Admin API Error]", e);
+    return NextResponse.json(
+      { error: e.message || "Unknown error", stack: e.stack },
+      { status: 500 }
+    );
   }
 }
