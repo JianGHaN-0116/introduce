@@ -41,6 +41,7 @@ const zh = {
     title: "专利",
     status: {
       granted: "已授权",
+      applied: "申请中",
       pending: "审查中",
     },
   },

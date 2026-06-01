@@ -497,6 +497,7 @@ function AdminContent() {
         <input type="text" value={String(item.number || "")} onChange={(e) => updateField(`patents.${i}.number`, e.target.value)} placeholder="专利号" className={smallInputCls} />
         <select value={String(item.status)} onChange={(e) => updateField(`patents.${i}.status`, e.target.value)} className={smallInputCls}>
           <option value="granted">Granted / 已授权</option>
+          <option value="applied">Applied / 申请中</option>
           <option value="pending">Pending / 审查中</option>
         </select>
         <textarea value={String(item.description || "")} onChange={(e) => updateField(`patents.${i}.description`, e.target.value)} placeholder="描述" rows={2} className={smallTextareaCls} />

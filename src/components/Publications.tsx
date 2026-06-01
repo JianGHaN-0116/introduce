@@ -14,6 +14,7 @@ const pubStatusStyles: Record<string, string> = {
 
 const patentStatusStyles: Record<string, string> = {
   granted: "text-green-700 bg-green-50 border-green-200",
+  applied: "text-blue-700 bg-blue-50 border-blue-200",
   pending: "text-yellow-700 bg-yellow-50 border-yellow-200",
 };
 
@@ -86,7 +87,7 @@ export default function Publications() {
             {config.patents.map((patent, i) => {
               const statusKey = patent.status as keyof typeof patentStatusStyles;
               const statusClass = patentStatusStyles[statusKey] || patentStatusStyles.pending;
-              const statusLabelKey = patent.status as "granted" | "pending";
+              const statusLabelKey = patent.status as "granted" | "applied" | "pending";
               return (
                 <motion.div
                   key={patent.title}

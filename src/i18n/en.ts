@@ -43,6 +43,7 @@ const en = {
     title: "Patents",
     status: {
       granted: "Granted",
+      applied: "Applied",
       pending: "Pending",
     },
   },

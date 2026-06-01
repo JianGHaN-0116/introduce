@@ -3,7 +3,7 @@ import siteConfigJson from "./siteConfig.json";
 interface Patent {
   title: string;
   number: string;
-  status: "granted" | "pending";
+  status: "granted" | "applied" | "pending";
   description: string;
 }
 
