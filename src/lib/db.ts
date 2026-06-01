@@ -100,6 +100,7 @@ export async function saveConfig(config: Record<string, unknown>) {
       research = ${JSON.stringify(config.research || [])},
       projects = ${JSON.stringify(config.projects || [])},
       publications = ${JSON.stringify(config.publications || [])},
+      patents = ${JSON.stringify(config.patents || [])},
       experience = ${JSON.stringify(config.experience || [])},
       skills = ${JSON.stringify(config.skills || [])},
       nav = ${JSON.stringify(config.nav || [])},
