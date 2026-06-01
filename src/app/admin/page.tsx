@@ -28,6 +28,7 @@ type SectionKey =
   | "research"
   | "projects"
   | "publications"
+  | "patents"
   | "experience"
   | "skills";
 
@@ -40,6 +41,7 @@ function AdminContent() {
     { key: "research", label: t.admin.sections.research },
     { key: "projects", label: t.admin.sections.projects },
     { key: "publications", label: t.admin.sections.publications },
+    { key: "patents", label: t.admin.sections.patents },
     { key: "experience", label: t.admin.sections.experience },
     { key: "skills", label: t.admin.sections.skills },
   ];
@@ -483,6 +485,24 @@ function AdminContent() {
       </div>
     ));
 
+  const renderPatentsSection = () =>
+    renderArraySection("patents", config.patents, {
+      title: "新专利",
+      number: "专利号",
+      status: "pending",
+      description: "描述",
+    }, (item, i) => (
+      <div className="space-y-2">
+        <input type="text" value={String(item.title)} onChange={(e) => updateField(`patents.${i}.title`, e.target.value)} placeholder="专利名称" className={smallInputCls} />
+        <input type="text" value={String(item.number || "")} onChange={(e) => updateField(`patents.${i}.number`, e.target.value)} placeholder="专利号" className={smallInputCls} />
+        <select value={String(item.status)} onChange={(e) => updateField(`patents.${i}.status`, e.target.value)} className={smallInputCls}>
+          <option value="granted">Granted / 已授权</option>
+          <option value="pending">Pending / 审查中</option>
+        </select>
+        <textarea value={String(item.description || "")} onChange={(e) => updateField(`patents.${i}.description`, e.target.value)} placeholder="描述" rows={2} className={smallTextareaCls} />
+      </div>
+    ));
+
   const renderExperienceSection = () =>
     renderArraySection("experience", config.experience, {
       year: "2024 - Present",
@@ -515,6 +535,7 @@ function AdminContent() {
     research: renderResearchSection,
     projects: renderProjectsSection,
     publications: renderPublicationsSection,
+    patents: renderPatentsSection,
     experience: renderExperienceSection,
     skills: renderSkillsSection,
   };

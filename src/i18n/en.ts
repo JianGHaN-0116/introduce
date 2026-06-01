@@ -32,11 +32,18 @@ const en = {
       "Selected projects that represent my work in security research and engineering.",
   },
   publications: {
-    title: "Publications",
+    title: "Academic Achievements",
     status: {
       published: "Published",
       review: "Under Review",
       preprint: "Preprint",
+    },
+  },
+  patents: {
+    title: "Patents",
+    status: {
+      granted: "Granted",
+      pending: "Pending",
     },
   },
   experience: {
@@ -72,6 +79,7 @@ const en = {
       research: "Research",
       projects: "Projects",
       publications: "Publications",
+      patents: "Patents",
       experience: "Experience",
       skills: "Skills",
     },

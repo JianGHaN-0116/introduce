@@ -30,11 +30,18 @@ const zh = {
     subtitle: "精选项目，展示我在安全研究和工程方面的工作。",
   },
   publications: {
-    title: "论文成果",
+    title: "学术成果",
     status: {
       published: "已发表",
       review: "审稿中",
       preprint: "预印本",
+    },
+  },
+  patents: {
+    title: "专利",
+    status: {
+      granted: "已授权",
+      pending: "审查中",
     },
   },
   experience: {
@@ -70,6 +77,7 @@ const zh = {
       research: "研究方向",
       projects: "项目经历",
       publications: "论文成果",
+      patents: "专利",
       experience: "经历时间线",
       skills: "技术能力",
     },
