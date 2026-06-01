@@ -28,10 +28,10 @@ export default function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <span className="text-sm text-neutral-400 font-medium tracking-wide uppercase">
+            <span className="text-base text-neutral-400 font-medium tracking-wide uppercase">
               {t.about.title}
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-2 text-neutral-900">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-2 text-neutral-900">
               {config.name}
             </h2>
           </motion.div>
@@ -41,7 +41,7 @@ export default function About() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-neutral-500 leading-relaxed"
+            className="text-base text-neutral-500 leading-relaxed"
           >
             {config.about.background}
           </motion.p>
@@ -51,7 +51,7 @@ export default function About() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-neutral-500 leading-relaxed"
+            className="text-base text-neutral-500 leading-relaxed"
           >
             {config.about.interests}
           </motion.p>
@@ -74,10 +74,10 @@ export default function About() {
                     <Icon size={18} className="text-neutral-600" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-neutral-800 mb-1">
+                    <h3 className="text-base font-semibold text-neutral-800 mb-1">
                       {card.title}
                     </h3>
-                    <p className="text-xs text-neutral-500 leading-relaxed">
+                    <p className="text-sm text-neutral-500 leading-relaxed">
                       {card.description}
                     </p>
                   </div>

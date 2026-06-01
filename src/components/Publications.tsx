@@ -20,10 +20,10 @@ export default function Publications() {
   return (
     <SectionWrapper id="publications" className="bg-neutral-100/50">
       <div className="space-y-4 mb-12">
-        <span className="text-sm text-neutral-400 font-medium tracking-wide uppercase">
+        <span className="text-base text-neutral-400 font-medium tracking-wide uppercase">
           {t.publications.title}
         </span>
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900">
+        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-neutral-900">
           Publications
         </h2>
       </div>
@@ -43,15 +43,15 @@ export default function Publications() {
               className="group rounded-xl p-5 bg-white border border-neutral-200 hover:border-neutral-400 hover:shadow-lg hover:shadow-neutral-200/50 hover:-translate-y-0.5 transition-all duration-300"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-2">
-                <h3 className="text-sm font-semibold text-neutral-800 group-hover:text-neutral-600 transition-colors">
+                <h3 className="text-base font-semibold text-neutral-800 group-hover:text-neutral-600 transition-colors">
                   {pub.title}
                 </h3>
-                <span className={`shrink-0 px-2.5 py-0.5 text-[10px] rounded-md border ${statusClass}`}>
+                <span className={`shrink-0 px-2.5 py-1 text-xs rounded-md border ${statusClass}`}>
                   {t.publications.status[statusLabelKey]}
                 </span>
               </div>
-              <p className="text-xs text-neutral-400 mb-1">{pub.venue}</p>
-              <p className="text-xs text-neutral-500">{pub.contribution}</p>
+              <p className="text-sm text-neutral-400 mb-1">{pub.venue}</p>
+              <p className="text-sm text-neutral-500">{pub.contribution}</p>
             </motion.div>
           );
         })}

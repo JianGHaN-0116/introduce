@@ -14,10 +14,10 @@ export default function Research() {
   return (
     <SectionWrapper id="research" className="bg-neutral-100/50">
       <div className="space-y-4 mb-12">
-        <span className="text-sm text-neutral-400 font-medium tracking-wide uppercase">
+        <span className="text-base text-neutral-400 font-medium tracking-wide uppercase">
           {t.research.title}
         </span>
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900">
+        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-neutral-900">
           Research Areas
         </h2>
       </div>
@@ -32,17 +32,17 @@ export default function Research() {
             transition={{ delay: i * 0.08, duration: 0.5 }}
             className="group rounded-xl p-6 bg-white border border-neutral-200 hover:border-neutral-400 hover:shadow-lg hover:shadow-neutral-200/50 hover:-translate-y-0.5 transition-all duration-300"
           >
-            <h3 className="text-sm font-semibold text-neutral-800 mb-2 group-hover:text-neutral-600 transition-colors">
+            <h3 className="text-base font-semibold text-neutral-800 mb-2 group-hover:text-neutral-600 transition-colors">
               {area.title}
             </h3>
-            <p className="text-xs text-neutral-500 leading-relaxed mb-4">
+            <p className="text-sm text-neutral-500 leading-relaxed mb-4">
               {area.description}
             </p>
             <div className="flex flex-wrap gap-2">
               {area.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-400 hover:bg-white transition-all"
+                  className="inline-flex items-center px-3.5 py-1.5 rounded-full text-sm font-medium border border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-400 hover:bg-white transition-all"
                 >
                   {tag}
                 </span>

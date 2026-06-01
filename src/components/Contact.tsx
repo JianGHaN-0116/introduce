@@ -20,10 +20,10 @@ export default function Contact() {
   return (
     <SectionWrapper id="contact" variant="dark">
       <div className="space-y-4 mb-12">
-        <span className="text-sm text-neutral-500 font-medium tracking-wide uppercase">
+        <span className="text-base text-neutral-500 font-medium tracking-wide uppercase">
           {t.contact.title}
         </span>
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
+        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-white">
           Get in Touch
         </h2>
       </div>
@@ -50,10 +50,10 @@ export default function Contact() {
                 <Icon size={16} className="text-neutral-400" />
               </div>
               <div>
-                <div className="text-xs text-neutral-500 mb-0.5">
+                <div className="text-sm text-neutral-500 mb-0.5">
                   {t.contact[item.key as keyof typeof t.contact]}
                 </div>
-                <div className="text-sm text-neutral-300 group-hover:text-white transition-colors truncate max-w-[200px]">
+                <div className="text-base text-neutral-300 group-hover:text-white transition-colors truncate max-w-[200px]">
                   {value}
                 </div>
               </div>
@@ -68,7 +68,7 @@ export default function Contact() {
         viewport={{ once: true }}
         className="text-center"
       >
-        <p className="text-sm text-neutral-500 italic">
+        <p className="text-base text-neutral-500 italic">
           &ldquo;{config.slogan}&rdquo;
         </p>
       </motion.div>

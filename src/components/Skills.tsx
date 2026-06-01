@@ -22,10 +22,10 @@ export default function Skills() {
   return (
     <SectionWrapper id="skills" className="bg-neutral-100/50">
       <div className="space-y-4 mb-12">
-        <span className="text-sm text-neutral-400 font-medium tracking-wide uppercase">
+        <span className="text-base text-neutral-400 font-medium tracking-wide uppercase">
           {t.skills.title}
         </span>
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900">
+        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-neutral-900">
           Skills
         </h2>
       </div>
@@ -44,7 +44,7 @@ export default function Skills() {
             >
               <div className="flex items-center gap-2 mb-4">
                 <div className={`w-1 h-4 rounded-full ${accent}`} />
-                <h3 className="text-sm font-semibold text-neutral-800">
+                <h3 className="text-base font-semibold text-neutral-800">
                   {t.skills.categories[group.category.toLowerCase() as keyof typeof t.skills.categories] || group.category}
                 </h3>
               </div>
@@ -52,7 +52,7 @@ export default function Skills() {
                 {group.items.map((skill) => (
                   <span
                     key={skill}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-400 hover:bg-white transition-all"
+                    className="inline-flex items-center px-3.5 py-1.5 rounded-full text-sm font-medium border border-neutral-200 bg-neutral-50 text-neutral-600 hover:border-neutral-400 hover:bg-white transition-all"
                   >
                     {skill}
                   </span>

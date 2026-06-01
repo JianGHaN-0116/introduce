@@ -34,7 +34,7 @@ export default function Hero() {
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">
               欢迎使用个人主页
             </h1>
-            <p className="text-lg text-neutral-400 leading-relaxed">
+            <p className="text-xl text-neutral-400 leading-relaxed">
               您还没有配置个人信息，请前往管理员后台填写您的资料。
             </p>
           </motion.div>
@@ -45,7 +45,7 @@ export default function Hero() {
           >
             <a
               href="/admin"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-neutral-900 text-sm font-medium hover:bg-neutral-200 transition-all duration-200"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-neutral-900 text-base font-medium hover:bg-neutral-200 transition-all duration-200"
             >
               前往管理员后台
               <ArrowRight size={16} />
@@ -89,7 +89,7 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-xs text-neutral-400">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-sm text-neutral-400">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 {config.subtitle}
               </span>
@@ -109,7 +109,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg text-neutral-400 leading-relaxed max-w-lg"
+              className="text-xl text-neutral-400 leading-relaxed max-w-lg"
             >
               {config.heroDescription}
             </motion.p>
@@ -122,14 +122,14 @@ export default function Hero() {
             >
               <a
                 href="#projects"
-                className="group inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-neutral-900 text-sm font-medium hover:bg-neutral-200 transition-all duration-200"
+                className="group inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-neutral-900 text-base font-medium hover:bg-neutral-200 transition-all duration-200"
               >
                 {t.hero.viewProjects}
                 <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
               </a>
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 text-sm font-medium text-neutral-300 hover:text-white hover:border-white/30 transition-all duration-200"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-white/10 text-base font-medium text-neutral-300 hover:text-white hover:border-white/30 transition-all duration-200"
               >
                 {t.hero.contactMe}
               </a>
@@ -154,14 +154,14 @@ export default function Hero() {
                   />
                 </div>
                 <div className="text-center">
-                  <div className="text-white font-semibold">{config.name}</div>
-                  <div className="text-neutral-500 text-sm">{config.title}</div>
+                  <div className="text-white font-semibold text-lg">{config.name}</div>
+                  <div className="text-neutral-500 text-base">{config.title}</div>
                 </div>
                 <div className="flex gap-2">
-                  <span className="px-2 py-0.5 text-[10px] rounded-full border border-white/10 text-neutral-400">
+                  <span className="px-2 py-0.5 text-xs rounded-full border border-white/10 text-neutral-400">
                     Network Security
                   </span>
-                  <span className="px-2 py-0.5 text-[10px] rounded-full border border-white/10 text-neutral-400">
+                  <span className="px-2 py-0.5 text-xs rounded-full border border-white/10 text-neutral-400">
                     AI/ML
                   </span>
                 </div>

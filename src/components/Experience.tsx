@@ -14,10 +14,10 @@ export default function Experience() {
   return (
     <SectionWrapper id="experience">
       <div className="space-y-4 mb-12">
-        <span className="text-sm text-neutral-400 font-medium tracking-wide uppercase">
+        <span className="text-base text-neutral-400 font-medium tracking-wide uppercase">
           {t.experience.title}
         </span>
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900">
+        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-neutral-900">
           Experience
         </h2>
       </div>
@@ -43,7 +43,7 @@ export default function Experience() {
                 i % 2 === 0 ? "md:text-right md:pr-12" : "md:text-left md:pl-12"
               }`}
             >
-              <span className="text-xs text-neutral-400 font-medium">{exp.year}</span>
+              <span className="text-sm text-neutral-400 font-medium">{exp.year}</span>
             </div>
 
             <div
@@ -52,11 +52,11 @@ export default function Experience() {
               }`}
             >
               <div className="group rounded-xl p-5 bg-white border border-neutral-200 hover:border-neutral-400 hover:shadow-lg hover:shadow-neutral-200/50 hover:-translate-y-0.5 transition-all duration-300">
-                <h3 className="text-sm font-semibold mb-1 text-neutral-800 group-hover:text-neutral-600 transition-colors">
+                <h3 className="text-base font-semibold mb-1 text-neutral-800 group-hover:text-neutral-600 transition-colors">
                   {exp.title}
                 </h3>
-                <p className="text-xs text-neutral-400 mb-2">{exp.organization}</p>
-                <p className="text-xs text-neutral-500 leading-relaxed">{exp.description}</p>
+                <p className="text-sm text-neutral-400 mb-2">{exp.organization}</p>
+                <p className="text-sm text-neutral-500 leading-relaxed">{exp.description}</p>
               </div>
             </div>
           </motion.div>
