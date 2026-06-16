@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { saveConfig } from "@/lib/db";
 
 const ADMIN_USERNAME_HASH =
-  "c46886b0b472784a6c50bb94f5f5aa091b41b65c7ec2eb5461f44e60796f4479";
+  "2e4cc37a5b389b8081c8259afac20c6fc0c8e931785febbc300df264d164b288";
 const ADMIN_PASSWORD_HASH =
-  "091131ec9c517689297ba809b94c38a82562287421a06201f45942e229d61907";
+  "0416662d97d328d5c6623962e8891a6b7af15955ba0a14c743ea5c01f8b95b99";
 
 async function sha256(message: string): Promise<string> {
   const msgBuffer = new TextEncoder().encode(message);
